@@ -33,7 +33,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - run: npm ci
     - run: npm run build --if-present
-#    - run: npm test
+    - run: npm test
     - name: Release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
