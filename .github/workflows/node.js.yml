@@ -37,7 +37,7 @@ jobs:
     - name: Release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        NPM_TOKEN: ${{ secrets.NPM_TOKEN_2 }}
       run: |
         echo "WHAT IS NPM TOKEN ${NPM_TOKEN}"
         npx semantic-release
