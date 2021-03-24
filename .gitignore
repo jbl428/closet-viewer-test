@@ -121,3 +121,5 @@ test-cli.sh
 answers
 test-srest-test.ts
 debugImgs
+/legacy-zrest.json
+/legacy-srest.json

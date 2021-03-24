@@ -1,33 +1,39 @@
 import React from "react";
 import * as U from "url";
+import { SRest } from "./types";
+import { URL } from "url";
 
 export const hookDomain = "http://screenshotrequest.clo";
-
-
-export const templateZrest = (libURL: U.URL, zrestURLs: U.URL[]) => (
-    <div>
-        <div id="target" style={{width: 512, height: 512}}/>
-        <script type='text/javascript' src={libURL.toString()}/>
-        <script dangerouslySetInnerHTML={{
-            __html: `
+export type StreamTemplate<A> = (
+  libURL: URL
+) => (data: readonly A[]) => JSX.Element;
+export const templateZrest: StreamTemplate<URL> = (libURL) => (zrestURLs) => (
+  <div>
+    <div id="target" style={{ width: 512, height: 512 }} />
+    <script type="text/javascript" src={libURL.toString()} />
+    <script
+      dangerouslySetInnerHTML={{
+        __html: `
 closet.viewer.init({
   element: "target",
   width: 512,
   height: 512,
   stats: true,
 });
-${makeRecursiveZrestTemplateJSCode(zrestURLs.map(x => x.toString()))}
-    `
-        }}>
-        </script>
-    </div>
+${makeRecursiveZrestTemplateJSCode(zrestURLs.map((x) => x.toString()))}
+    `,
+      }}
+    />
+  </div>
 );
 
-function makeRecursiveZrestTemplateJSCode(zrestURLs: readonly string[]): string {
-    if (zrestURLs.length === 0) {
-        return `fetch("${hookDomain}", { method: "DELETE", });`
-    } else {
-        return `
+function makeRecursiveZrestTemplateJSCode(
+  zrestURLs: readonly string[]
+): string {
+  if (zrestURLs.length === 0) {
+    return `fetch("${hookDomain}", { method: "DELETE", });`;
+  } else {
+    return `
         console.log("ZREST TEST START", "${zrestURLs[0]}")
         closet.viewer.loadZrestWithoutRendering("${zrestURLs[0]}")
           .then(()=>new Promise(done => setTimeout(done, 1000)))
@@ -38,47 +44,54 @@ function makeRecursiveZrestTemplateJSCode(zrestURLs: readonly string[]): string 
             }))
           .then(()=>{
             ${makeRecursiveZrestTemplateJSCode(zrestURLs.slice(1))}
-          })`
-    }
+          })`;
+  }
 }
 
-function makeRecursiveTemplateJSCode(srestURLs: readonly string[]): string {
-    if (srestURLs.length === 0) {
-        return `fetch("${hookDomain}", { method: "DELETE", });`
-    } else {
-        return `
-        console.log("SREST TEST START", "${srestURLs[0]}")
-        closet.viewer.loadSrestWithoutRendering("${srestURLs[0]}")
+function makeRecursiveTemplateJSCode(
+  srestObjs: readonly SRest<readonly string[]>[]
+): string {
+  if (srestObjs.length === 0) {
+    return `fetch("${hookDomain}", { method: "DELETE", });`;
+  } else {
+    return `
+        console.log("SREST TEST START", "${srestObjs[0].rest}")
+        closet.viewer.loadSrestWithoutRendering(${JSON.stringify(srestObjs[0])})
           .then(()=>closet.viewer.capturePrincipleViews())
           .then((images)=>fetch("${hookDomain}", {
               method: "POST",
               body: JSON.stringify({ images, }),
             }))
           .then(()=>{
-            ${makeRecursiveTemplateJSCode(srestURLs.slice(1))}
-          })`
-    }
+            ${makeRecursiveTemplateJSCode(srestObjs.slice(1))}
+          })`;
+  }
 }
 
-function makeTemplateJSCode(srestURLs: readonly string[]): string {
-    const initCode = `closet.viewer.init({
+function makeTemplateJSCode(
+  srestObjs: readonly SRest<readonly string[]>[]
+): string {
+  const initCode = `closet.viewer.init({
   element: "target",
   width: 512,
   height: 512,
   stats: true,
 });`;
-    return initCode + makeRecursiveTemplateJSCode(srestURLs);
+  return initCode + makeRecursiveTemplateJSCode(srestObjs);
 }
 
 export type SRestTemplateConfig = {
-    libURL: U.URL;
-    srestURLs: readonly string[];
-}
-export const templateSrest = ({libURL, srestURLs}:SRestTemplateConfig) => (
-    <div>
-        <div id="target" style={{width: 512, height: 512}}/>
-        <script type='text/javascript' src={libURL.toString()}/>
-        <script dangerouslySetInnerHTML={{__html: makeTemplateJSCode(srestURLs)}}>
-        </script>
-    </div>
+  libURL: U.URL;
+  srestObjs: readonly SRest<readonly string[]>[];
+};
+export const templateSrest: StreamTemplate<SRest<readonly string[]>> = (
+  libURL
+) => (srestObjs) => (
+  <div>
+    <div id="target" style={{ width: 512, height: 512 }} />
+    <script type="text/javascript" src={libURL.toString()} />
+    <script
+      dangerouslySetInnerHTML={{ __html: makeTemplateJSCode(srestObjs) }}
+    />
+  </div>
 );

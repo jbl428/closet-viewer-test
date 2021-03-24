@@ -8,4 +8,4 @@ zrest-debug
 zrest-wrongs
 test-alts
 alt-debug-images
-test-debug-images
+/debug/
