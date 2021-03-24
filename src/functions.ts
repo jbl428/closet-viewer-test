@@ -9,7 +9,7 @@ import * as E from "fp-ts/Either";
 import { Either, isLeft } from "fp-ts/Either";
 import * as D from "io-ts/Decoder";
 
-import { concatMap, map, reduce } from "rxjs/operators";
+import { concatMap, map, reduce, share } from "rxjs/operators";
 import { pipe } from "fp-ts/function";
 import { from, Observable, zip } from "rxjs";
 import { bracket, tryCatchK } from "fp-ts/TaskEither";
@@ -217,7 +217,10 @@ export function testDataSet<D>(
     fs.mkdirSync(debugImageDir);
   }
   return runWithBrowser((browser) => {
-    const screenshots = streamScreenshots_browser(jsx, hookDomain)(browser);
+    const screenshots = streamScreenshots_browser(
+      jsx,
+      hookDomain
+    )(browser).pipe(share());
 
     const compareResults = zip(screenshots, answerStream).pipe(
       map(([x, y]) => sequenceT(E.either)(x, y)),
