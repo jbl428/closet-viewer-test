@@ -147,7 +147,7 @@ function runWithBrowser<_E, _T>(
       puppeteer.launch.bind(puppeteer),
       console.error
     )({ args: ["--no-sandbox", "--disable-web-security"] }),
-    RTE.mapLeft(console.error)(browserReadingTask),
+    RTE.mapLeft((x) => x as any)(browserReadingTask),
     (browser) => {
       console.log("Releasing browser ...");
       return tryCatchK(() => browser.close(), console.error)();
