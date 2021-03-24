@@ -6,7 +6,8 @@
   "scripts": {
     "test": "jest",
     "install": "pip3 install \"closet-viewer-cv==0.0.6\"",
-    "semantic-release": "semantic-release"
+    "semantic-release": "semantic-release",
+    "build": "tsc -d"
   },
   "files": [
     "dist"
