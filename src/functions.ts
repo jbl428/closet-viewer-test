@@ -12,7 +12,7 @@ import * as D from "io-ts/Decoder";
 import { concatMap, map, reduce } from "rxjs/operators";
 import { pipe } from "fp-ts/function";
 import { from, Observable, zip } from "rxjs";
-import { bracket, TaskEither, tryCatchK } from "fp-ts/TaskEither";
+import { bracket, tryCatchK } from "fp-ts/TaskEither";
 import * as RTE from "fp-ts/ReaderTaskEither";
 import { ReaderTaskEither } from "fp-ts/ReaderTaskEither";
 
@@ -128,17 +128,6 @@ function streamScreenshots_browser(
   );
 }
 
-export function generateScreenshots<D, E, A>(
-  withScreenshots: (
-    oe: ObservableEither<unknown, Facets<Buffer>>
-  ) => TaskEither<E, A>,
-  jsx: JSX.Element
-) {
-  return runWithBrowser((browser) => {
-    return withScreenshots(streamScreenshots_browser(jsx, hookDomain)(browser));
-  });
-}
-
 function runWithBrowser<_E, _T>(
   browserReadingTask: ReaderTaskEither<Browser, _E, _T>
 ) {
@@ -227,7 +216,9 @@ export function testDataSet<D>(
   if (!fs.existsSync(debugImageDir)) {
     fs.mkdirSync(debugImageDir);
   }
-  return generateScreenshots((screenshots) => {
+  return runWithBrowser((browser) => {
+    const screenshots = streamScreenshots_browser(jsx, hookDomain)(browser);
+
     const compareResults = zip(screenshots, answerStream).pipe(
       map(([x, y]) => sequenceT(E.either)(x, y)),
       observableEither.map(([result, answer]) => {
@@ -281,7 +272,7 @@ export function testDataSet<D>(
     );
 
     return toTaskEither(result);
-  }, jsx);
+  });
 }
 
 function makeAnswerStream2(
