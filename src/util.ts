@@ -1,7 +1,5 @@
-import { addSlash, decodeSRestResponse, SRest } from "./types";
 import fetch from "node-fetch";
-import { either, reader } from "fp-ts";
-import { ReaderTaskEither } from "fp-ts/ReaderTaskEither";
+import { reader } from "fp-ts";
 import { tryCatchK } from "fp-ts/TaskEither";
 import { identity, pipe } from "fp-ts/function";
 import {
@@ -11,38 +9,6 @@ import {
 } from "@aws-sdk/client-s3";
 import { Readable } from "stream";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-
-export function fetchSrest_styleid(
-  domain: string,
-  token: string
-): ReaderTaskEither<string, any, SRest<string[]>> {
-  return (styleId: string) => {
-    return () =>
-      fetch(addSlash(domain) + `api/styles/${styleId}/versions/1/zrest`, {
-        headers: {
-          Authorization: "Bearer " + token,
-          "api-version": "2.0",
-        },
-      })
-        .then((x) => x.text())
-        .then((text) => {
-          // console.log("body", text);
-          return JSON.parse(text);
-        })
-        .then(decodeSRestResponse)
-        .then(either.map((x) => x.result))
-        .then(
-          either.mapLeft((e) => {
-            console.error(e);
-            return new Error("SRestResponse decode fail");
-          })
-        )
-        .catch((err) => {
-          console.error(err);
-          return either.left(err);
-        });
-  };
-}
 
 const _downloadBufferFromS3 = (
   config: { Bucket: string; Key: string },

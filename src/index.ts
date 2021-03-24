@@ -7,6 +7,7 @@ import { key2URL } from "./util";
 import { teSequenceArrayConcat } from "./extension";
 import { templateSrest, templateZrest } from "./template";
 import { testDataSet } from "./functions";
+import { Config, copyToS3, readSrestFromSID, readZrestFromSID } from "./write";
 
 export function testSrest(
   srestTestDataSet: SRestTestDataSet,
@@ -82,4 +83,24 @@ export function testZrest(
       );
     })
   );
+}
+
+export function copyZrestToS3(styleIDs: string[], config: Config) {
+  return copyToS3(
+    styleIDs,
+    config.s3,
+    config.bucket,
+    config.baseKey,
+    readZrestFromSID
+  )(config);
+}
+
+export function copySrestToS3(styleIDs: string[], config: Config) {
+  return copyToS3(
+    styleIDs,
+    config.s3,
+    config.bucket,
+    config.baseKey,
+    readSrestFromSID
+  )(config);
 }

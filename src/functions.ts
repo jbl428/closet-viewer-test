@@ -78,7 +78,7 @@ function stopWhenError<_E, _A>(
   });
 }
 
-function streamScreenshots_browser(
+export function streamScreenshots_browser(
   jsx: JSX.Element,
   hookDomain: string
 ): ReaderObservableEither<Browser, unknown, Facets<Buffer>> {
@@ -128,7 +128,7 @@ function streamScreenshots_browser(
   );
 }
 
-function runWithBrowser<_E, _T>(
+export function runWithBrowser<_E, _T>(
   browserReadingTask: ReaderTaskEither<Browser, _E, _T>
 ) {
   return bracket(

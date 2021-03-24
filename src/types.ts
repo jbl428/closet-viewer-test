@@ -50,20 +50,26 @@ const AnswerData = D.type({
   left: D.array(S3Key_D),
 });
 export type AnswerData = D.TypeOf<typeof AnswerData>;
-const ZRestTestData = D.type({
-  key: S3Key_D,
+const AnswerPart = D.type({
   answers: AnswerData,
 });
+const ZRestPart = D.type({
+  key: S3Key_D,
+});
+export type ZRestPart = D.TypeOf<typeof ZRestPart>;
+const ZRestTestData = pipe(AnswerPart, D.intersect(ZRestPart));
 
-const SRestTestData = D.type({
+export type ZRestTestData = D.TypeOf<typeof ZRestTestData>;
+
+const SRestPart = D.type({
   srest: D.type({
     dracos: D.array(S3Key_D),
     images: D.array(S3Key_D),
     rest: D.array(S3Key_D),
   }),
-  answers: AnswerData,
 });
-
+export type SRestPart = D.TypeOf<typeof SRestPart>;
+const SRestTestData = pipe(AnswerPart, D.intersect(SRestPart));
 const SRestTestDataSet = D.record(SRestTestData);
 export type SRestTestDataSet = D.TypeOf<typeof SRestTestDataSet>;
 export const decodeSRestTestDataSet = SRestTestDataSet.decode;
