@@ -1,4 +1,4 @@
-import { SRestTestDataSet, ZRestTestDataSet } from "./types";
+import { addSlash, SRestTestDataSet, ZRestTestDataSet } from "./types";
 import { S3Client } from "@aws-sdk/client-s3";
 import { URL } from "url";
 import { pipe } from "fp-ts/function";
@@ -8,6 +8,8 @@ import { teSequenceArrayConcat } from "./extension";
 import { templateSrest, templateZrest } from "./template";
 import { testDataSet } from "./functions";
 import { Config, copyToS3, readSrestFromSID, readZrestFromSID } from "./write";
+import fetch from "node-fetch";
+import { tryCatchK } from "fp-ts/TaskEither";
 
 export function testSrest(
   srestTestDataSet: SRestTestDataSet,
@@ -103,4 +105,31 @@ export function copySrestToS3(styleIDs: string[], config: Config) {
     config.baseKey,
     readSrestFromSID
   )(config);
+}
+
+type Account = {
+  domain: string;
+  email: string;
+  password: string;
+};
+
+export function getClosetToken({ domain, email, password }: Account) {
+  const safeEmail = encodeURIComponent(email);
+  const safePass = encodeURIComponent(password);
+  const url =
+    addSlash(domain) +
+    "api/auth/token?email=" +
+    safeEmail +
+    "&password=" +
+    safePass;
+  const getter = () =>
+    fetch(url, {
+      headers: {
+        "api-version": "2.0",
+      },
+    }).then((x) => x.text());
+  return tryCatchK(getter, (err) => {
+    console.error("Getting Token failed", err);
+    return new Error("Getting Token failed");
+  })();
 }
