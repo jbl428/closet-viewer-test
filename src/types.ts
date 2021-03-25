@@ -2,18 +2,33 @@ import * as D from "io-ts/Decoder";
 import { pipe } from "fp-ts/function";
 import { either } from "fp-ts";
 
-const SRest = D.type({
-  dracos: D.array(D.string),
-  images: D.array(D.string),
-  rest: D.array(D.string),
-});
+export const S3Key_D: D.Decoder<unknown, S3Key> = {
+  decode(o) {
+    return pipe(
+      D.string.decode(o),
+      either.map((x) => new S3Key(x))
+    );
+  },
+};
+
+function SRest_D<T>(
+  elementDecoder: D.Decoder<unknown, T>
+): D.Decoder<unknown, { dracos: T[]; images: T[]; rest: T[] }> {
+  return D.type({
+    dracos: D.array(elementDecoder),
+    images: D.array(elementDecoder),
+    rest: D.array(elementDecoder),
+  });
+}
+
+export const SRest_D_Str = SRest_D(D.string);
+export const SRest_D_S3Key = SRest_D(S3Key_D);
 
 export function tup<A, B>(a: A, b: B): [A, B] {
   return [a, b];
 }
 
-export const decodeSRest = SRest.decode;
-type SRestKey = keyof D.TypeOf<typeof SRest>;
+type SRestKey = keyof D.TypeOf<typeof SRest_D_Str>;
 export type SRest<A> = Record<SRestKey, A>;
 
 export class S3Key {
@@ -23,15 +38,6 @@ export class S3Key {
     return this.str;
   }
 }
-
-const S3Key_D: D.Decoder<unknown, S3Key> = {
-  decode(o) {
-    return pipe(
-      D.string.decode(o),
-      either.map((x) => new S3Key(x))
-    );
-  },
-};
 
 export function addSlash(str: string): string {
   if (str.endsWith("/")) {
@@ -62,11 +68,7 @@ const ZRestTestData = pipe(AnswerPart, D.intersect(ZRestPart));
 export type ZRestTestData = D.TypeOf<typeof ZRestTestData>;
 
 const SRestPart = D.type({
-  srest: D.type({
-    dracos: D.array(S3Key_D),
-    images: D.array(S3Key_D),
-    rest: D.array(S3Key_D),
-  }),
+  srest: SRest_D_S3Key,
 });
 export type SRestPart = D.TypeOf<typeof SRestPart>;
 const SRestTestData = pipe(AnswerPart, D.intersect(SRestPart));
@@ -80,6 +82,6 @@ export const decodeZRestTestDataSet = ZRestTestDataSet.decode;
 
 const SRestResponse = D.type({
   isSeparated: D.boolean,
-  result: SRest,
+  result: SRest_D_Str,
 });
 export const decodeSRestResponse = SRestResponse.decode;

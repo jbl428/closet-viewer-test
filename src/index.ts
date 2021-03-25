@@ -3,7 +3,7 @@ import { S3Client } from "@aws-sdk/client-s3";
 import { URL } from "url";
 import { pipe } from "fp-ts/function";
 import { array, record, taskEither } from "fp-ts";
-import { key2URL } from "./util";
+import { key2URL, srestS3KeyToURLStr } from "./util";
 import { teSequenceArrayConcat } from "./extension";
 import { templateSrest, templateZrest } from "./template";
 import { testDataSet } from "./functions";
@@ -30,9 +30,7 @@ export function testSrest(
 
   return pipe(
     _srests,
-    array.map(record.map(array.map((key) => key2URL(key.str, Bucket, s3)))),
-    array.map(record.map(teSequenceArrayConcat)),
-    array.map(record.sequence(taskEither.taskEither)),
+    array.map(srestS3KeyToURLStr(Bucket, s3)),
     teSequenceArrayConcat,
     taskEither.chain((srests) => {
       const aaa = srests.map((srest, idx) => ({

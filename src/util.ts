@@ -1,5 +1,5 @@
 import fetch from "node-fetch";
-import { reader } from "fp-ts";
+import { array, reader, record, taskEither } from "fp-ts";
 import { tryCatchK } from "fp-ts/TaskEither";
 import { identity, pipe } from "fp-ts/function";
 import {
@@ -9,6 +9,9 @@ import {
 } from "@aws-sdk/client-s3";
 import { Readable } from "stream";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { S3Key, SRest } from "./types";
+import { teSequenceArrayConcat } from "./extension";
+import { URL } from "url";
 
 const _downloadBufferFromS3 = (
   config: { Bucket: string; Key: string },
@@ -37,6 +40,7 @@ function _key2URL(Key: string, Bucket: string, s3: S3Client) {
 
 export const key2URL = tryCatchK(_key2URL, (err) => {
   console.error("Failed to create presigned url", err);
+  return err;
 });
 type UploadType =
   | { _tag: "string"; text: string }
@@ -75,4 +79,19 @@ export const downloadBuffer = tryCatchK(_downloadBuffer, identity);
 
 function _downloadBuffer(url: string) {
   return fetch(url).then((x) => x.buffer());
+}
+
+export function srestS3KeyToURLStr(Bucket: string, s3: S3Client) {
+  return (srest: SRest<S3Key[]>) => {
+    return pipe(
+      srest,
+      record.map(array.map((key) => key2URL(key.str, Bucket, s3))),
+      record.map(teSequenceArrayConcat),
+      record.sequence(taskEither.taskEither)
+    );
+  };
+}
+
+export function url(str: string) {
+  return new URL(str);
 }

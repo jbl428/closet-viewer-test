@@ -11,10 +11,6 @@ import { testSrest } from "../src";
 test(
   "srest",
   async () => {
-    console.log(
-      process.env.AWS_ACCESS_KEY_ID!,
-      process.env.AWS_SECRET_ACCESS_KEY!
-    );
     const aa = pipe(
       fs.readFileSync(resolve(__dirname, "srest-test-data-set.json"), "utf-8"),
       JSON.parse,

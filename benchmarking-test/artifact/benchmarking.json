@@ -1,0 +1,161 @@
+{
+  "apiEndpoint": "https://e9mtlzmh19.execute-api.ap-northeast-2.amazonaws.com/develop",
+  "Bucket": "viewer-test-model",
+  "TableName": "ClosetViewerMetric",
+  "tasks": [
+    {
+      "name": "Bundle Size",
+      "type": "bundleSize"
+    },
+    {
+      "name": "fps",
+      "type": "fps",
+      "zrestS3Key": "2021-03-23T05%3A29%3A48.677Z/00000000/viewer.zrest",
+      "timeMS": 3000,
+      "viewWidth": 512,
+      "viewHeight": 512
+    },
+    {
+      "name": "zrestLoadingDataA",
+      "type": "zrestLoading",
+      "zrestS3Keys": [
+        "2021-03-23T05%3A29%3A48.677Z/00000000/viewer.zrest",
+        "2021-03-23T05%3A29%3A48.677Z/00000001/viewer.zrest"
+      ]
+    },
+    {
+      "name": "srestLoadingDataA",
+      "type": "srestLoading",
+      "srests": [
+        {
+          "dracos": [
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/dracos/36.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/dracos/37.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/dracos/38.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/dracos/39.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/dracos/40.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/dracos/41.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/dracos/42.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/dracos/43.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/dracos/44.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/dracos/45.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/dracos/46.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/dracos/47.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/dracos/48.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/dracos/49.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/dracos/50.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/dracos/51.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/dracos/52.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/dracos/53.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/dracos/54.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/dracos/55.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/dracos/56.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/dracos/57.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/dracos/58.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/dracos/59.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/dracos/60.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/dracos/61.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/dracos/62.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/dracos/63.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/dracos/64.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/dracos/65.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/dracos/66.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/dracos/67.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/dracos/68.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/dracos/69.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/dracos/70.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/dracos/71.drc.zip"
+          ],
+          "images": [
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/images/seam_puckering_2ol97pf293f2sdk98.png",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/images/0.jpg",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/images/1.png",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/images/2.jpg",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/images/3.jpg",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/images/4.jpg",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/images/5.jpg",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/images/6.jpg",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/images/7.jpg",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/images/8.jpg",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/images/9.jpg",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/images/10.jpg",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/images/11.jpg",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/images/12.jpg",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/images/13.jpg",
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/images/14.jpg"
+          ],
+          "rest": [
+            "2021-03-23T06%3A40%3A05.387Z/010074390d0848e0bb75184e53efebfa/rest/viewer.rest.zip"
+          ]
+        },
+        {
+          "dracos": [
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/dracos/44.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/dracos/45.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/dracos/46.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/dracos/47.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/dracos/48.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/dracos/49.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/dracos/50.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/dracos/51.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/dracos/52.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/dracos/53.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/dracos/54.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/dracos/55.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/dracos/56.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/dracos/57.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/dracos/58.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/dracos/59.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/dracos/60.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/dracos/61.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/dracos/62.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/dracos/63.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/dracos/64.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/dracos/65.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/dracos/66.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/dracos/67.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/dracos/68.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/dracos/69.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/dracos/70.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/dracos/71.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/dracos/72.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/dracos/73.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/dracos/74.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/dracos/75.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/dracos/76.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/dracos/77.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/dracos/78.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/dracos/79.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/dracos/80.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/dracos/81.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/dracos/82.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/dracos/83.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/dracos/84.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/dracos/85.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/dracos/86.drc.zip",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/dracos/87.drc.zip"
+          ],
+          "images": [
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/images/seam_puckering_2ol97pf293f2sdk98.png",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/images/0.png",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/images/1.jpg",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/images/2.jpg",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/images/3.jpg",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/images/4.jpg",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/images/5.jpg",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/images/6.jpg",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/images/7.jpg",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/images/8.jpg",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/images/9.jpg",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/images/10.jpg",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/images/11.jpg",
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/images/12.jpg"
+          ],
+          "rest": [
+            "2021-03-23T06%3A40%3A05.387Z/1d55ad72560142a486e6a97deebcbcbe/rest/viewer.rest.zip"
+          ]
+        }
+      ]
+    }
+  ]
+}

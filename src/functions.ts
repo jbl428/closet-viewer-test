@@ -55,7 +55,7 @@ const principleViewResponse = D.type({
   images: D.array(D.string),
 });
 
-function stopWhenError<_E, _A>(
+export function stopWhenError<_E, _A>(
   oe: ObservableEither<_E, _A>
 ): ObservableEither<_E, _A> {
   return new Observable<Either<_E, _A>>((subscriber) => {

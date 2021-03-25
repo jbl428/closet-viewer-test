@@ -123,3 +123,7 @@ test-srest-test.ts
 debugImgs
 /legacy-zrest.json
 /legacy-srest.json
+/src/benchmarking/0Hsu8EU.zip
+/src/benchmarking/0Hsu8EU/
+/benchmarking-test/artifact.zip
+/dist/
