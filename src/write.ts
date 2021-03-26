@@ -262,8 +262,8 @@ export function copyToS3(
                   taskEither.chain(
                     writeAnswer(s3, bucket, join(baseS3Key, styleID, "answers"))
                   ),
-                  taskEither.map((answer) => {
-                    const o = { answer, ...obj };
+                  taskEither.map((answers) => {
+                    const o = { answers, ...obj };
                     return tup(styleID, o);
                   })
                 );
