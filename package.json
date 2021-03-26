@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "jest",
-    "install": "pip3 install \"closet-viewer-cv==0.0.6\"",
+    "install": "pip3 install \"closet-viewer-cv==0.0.6\" || true",
     "semantic-release": "semantic-release",
     "build": "tsc -d"
   },
