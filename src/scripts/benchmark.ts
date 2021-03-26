@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import {
   CommandLineParser,
   CommandLineRemainder,
@@ -18,9 +20,8 @@ export class BenchmarkCLI extends CommandLineParser {
 
   public constructor() {
     super({
-      toolFilename: "widget",
-      toolDescription:
-        'The "widget" tool is a code sample for using the @rushstack/ts-command-line library.',
+      toolFilename: "closet-viewer-benchmark",
+      toolDescription: "Benchmark",
     });
 
     this.libURL = this.defineStringParameter({
@@ -69,3 +70,5 @@ export class BenchmarkCLI extends CommandLineParser {
     return super.onExecute();
   }
 }
+
+new BenchmarkCLI().execute();
