@@ -12,6 +12,7 @@ import { either, readonlyArray, record } from "fp-ts";
 import { getLastSemigroup } from "fp-ts/Semigroup";
 import { tup } from "../types";
 import { url } from "../util";
+import { Concat, Of } from "io-ts/FreeSemigroup";
 
 export class BenchmarkCLI extends CommandLineParser {
   private libURL: CommandLineStringParameter;
@@ -66,8 +67,26 @@ export class BenchmarkCLI extends CommandLineParser {
       this.artifactURL.value!,
       url(this.libURL.value!),
       meta
-    )().then(either.bimap(console.error, console.log));
+    )().then(either.bimap((e) => printError(0, e), console.log));
     return super.onExecute();
+  }
+}
+
+const isOf = (x: any): x is Of<any> => {
+  return x._tag === "Of";
+};
+const isConcat = (x: any): x is Concat<any> => {
+  return x._tag === "Concat";
+};
+
+function printError(indent: number, x: unknown) {
+  if (isOf(x)) {
+    console.log(new Array(indent).map(() => " ").join(""), "Of", x.value);
+  } else if (isConcat(x)) {
+    printError(indent + 1, x.left);
+    printError(indent + 1, x.right);
+  } else {
+    console.log(new Array(indent).map(() => " ").join(""), x);
   }
 }
 

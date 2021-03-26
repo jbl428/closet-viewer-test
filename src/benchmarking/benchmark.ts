@@ -29,7 +29,7 @@ function _unzip(artifactURL: string) {
   return new Promise<Buffer>((done, reject) => {
     let jsonChunks: Uint8Array[] = [];
     const unzip = new fflate.Unzip((stream) => {
-      if (stream.name.endsWith("benchmarking.json")) {
+      if (stream.name.split("/").reverse()[0] === "benchmarking.json") {
         stream.ondata = (err, data, final) => {
           if (err) reject(err);
           jsonChunks.push(data);
