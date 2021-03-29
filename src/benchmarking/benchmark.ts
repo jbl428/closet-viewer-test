@@ -151,7 +151,7 @@ function benchmarkUnit(
     case "srestLoading":
       return pipe(
         taskData.srests,
-        array.map(srestS3KeyToURLStr(Bucket, s3)),
+        array.map(srestS3KeyToURLStr({ Bucket, s3 })),
         teSequenceArrayConcat,
         taskEither.chainW((srests) => {
           return benchmarkSrestLoadingWithSrests(libURL, srests, taskData.name);

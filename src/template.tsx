@@ -1,7 +1,7 @@
 import React from "react";
 import * as U from "url";
-import { SRest } from "./types";
 import { URL } from "url";
+import { SRest } from "./types";
 
 export const hookDomain = "http://screenshotrequest.clo";
 export type StreamTemplate<A> = (
@@ -49,7 +49,7 @@ function makeRecursiveZrestTemplateJSCode(
 }
 
 function makeRecursiveTemplateJSCode(
-  srestObjs: readonly SRest<readonly string[]>[]
+  srestObjs: readonly SRest<string>[]
 ): string {
   if (srestObjs.length === 0) {
     return `fetch("${hookDomain}", { method: "DELETE", });`;
@@ -68,9 +68,7 @@ function makeRecursiveTemplateJSCode(
   }
 }
 
-function makeTemplateJSCode(
-  srestObjs: readonly SRest<readonly string[]>[]
-): string {
+function makeTemplateJSCode(srestObjs: readonly SRest<string>[]): string {
   const initCode = `closet.viewer.init({
   element: "target",
   width: 512,
@@ -82,11 +80,11 @@ function makeTemplateJSCode(
 
 export type SRestTemplateConfig = {
   libURL: U.URL;
-  srestObjs: readonly SRest<readonly string[]>[];
+  srestObjs: readonly SRest<string>[];
 };
-export const templateSrest: StreamTemplate<SRest<readonly string[]>> = (
-  libURL
-) => (srestObjs) => (
+export const templateSrest: StreamTemplate<SRest<string>> = (libURL) => (
+  srestObjs
+) => (
   <div>
     <div id="target" style={{ width: 512, height: 512 }} />
     <script type="text/javascript" src={libURL.toString()} />

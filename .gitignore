@@ -127,3 +127,4 @@ debugImgs
 /src/benchmarking/0Hsu8EU/
 /benchmarking-test/artifact.zip
 /dist/
+/test/tools.spec.ts

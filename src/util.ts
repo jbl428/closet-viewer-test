@@ -1,5 +1,5 @@
 import fetch from "node-fetch";
-import { array, reader, record, taskEither } from "fp-ts";
+import { reader, readonlyArray, record, taskEither } from "fp-ts";
 import { tryCatchK } from "fp-ts/TaskEither";
 import { identity, pipe } from "fp-ts/function";
 import {
@@ -34,6 +34,7 @@ export const downloadBufferFromS3 = tryCatchK(_downloadBufferFromS3, identity);
 function _key2URL(Key: string, Bucket: string, s3: S3Client) {
   // console.debug(Key, Bucket);
   return getSignedUrl(s3 as any, new GetObjectCommand({ Key, Bucket }) as any, {
+    signingRegion: "ap-northeast-2",
     expiresIn: 60 * 30, // 30 minutes
   });
 }
@@ -81,11 +82,17 @@ function _downloadBuffer(url: string) {
   return fetch(url).then((x) => x.buffer());
 }
 
-export function srestS3KeyToURLStr(Bucket: string, s3: S3Client) {
-  return (srest: SRest<S3Key[]>) => {
+export function srestS3KeyToURLStr({
+  Bucket,
+  s3,
+}: {
+  Bucket: string;
+  s3: S3Client;
+}) {
+  return (srest: SRest<S3Key>) => {
     return pipe(
       srest,
-      record.map(array.map((key) => key2URL(key.str, Bucket, s3))),
+      record.map(readonlyArray.map((key) => key2URL(key.str, Bucket, s3))),
       record.map(teSequenceArrayConcat),
       record.sequence(taskEither.taskEither)
     );

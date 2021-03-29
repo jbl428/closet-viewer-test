@@ -30,7 +30,7 @@ export function testSrest(
 
   return pipe(
     _srests,
-    array.map(srestS3KeyToURLStr(Bucket, s3)),
+    array.map(srestS3KeyToURLStr({ Bucket, s3 })),
     teSequenceArrayConcat,
     taskEither.chain((srests) => {
       const aaa = srests.map((srest, idx) => ({

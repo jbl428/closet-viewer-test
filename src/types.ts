@@ -29,7 +29,7 @@ export function tup<A, B>(a: A, b: B): [A, B] {
 }
 
 type SRestKey = keyof D.TypeOf<typeof SRest_D_Str>;
-export type SRest<A> = Record<SRestKey, A>;
+export type SRest<A> = Record<SRestKey, readonly A[]>;
 
 export class S3Key {
   constructor(public str: string) {}
@@ -72,6 +72,7 @@ const SRestPart = D.type({
 });
 export type SRestPart = D.TypeOf<typeof SRestPart>;
 const SRestTestData = pipe(AnswerPart, D.intersect(SRestPart));
+export type SRestTestData = D.TypeOf<typeof SRestTestData>;
 const SRestTestDataSet = D.record(SRestTestData);
 export type SRestTestDataSet = D.TypeOf<typeof SRestTestDataSet>;
 export const decodeSRestTestDataSet = SRestTestDataSet.decode;

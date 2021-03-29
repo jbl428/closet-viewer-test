@@ -83,9 +83,7 @@ export const templateForFPS = (
 
 export const measureCue = "measure cue";
 
-function makeRecursiveTemplateJSCode(
-  srests: readonly SRest<readonly string[]>[]
-): string {
+function makeRecursiveTemplateJSCode(srests: readonly SRest<string>[]): string {
   if (srests.length === 0) {
     return `fetch("${hookDomain}", { method: "DELETE", });`;
   } else {
@@ -103,7 +101,7 @@ function makeRecursiveTemplateJSCode(
 
 function makeTemplateJSCode(
   libURL: U.URL,
-  srests: readonly SRest<readonly string[]>[]
+  srests: readonly SRest<string>[]
 ): string {
   const initCode = `closet.viewer.init({
   element: "target",
@@ -116,7 +114,7 @@ function makeTemplateJSCode(
 
 export const templateSrestBenchmarking = (
   libURL: U.URL,
-  srests: readonly SRest<readonly string[]>[]
+  srests: readonly SRest<string>[]
 ) => (
   <div>
     <div id="target" style={{ width: 512, height: 512 }} />

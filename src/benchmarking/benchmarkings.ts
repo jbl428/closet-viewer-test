@@ -222,7 +222,7 @@ const launchOption: LaunchOptions = {
 
 export function benchmarkSrestLoadingWithSrests(
   liburl: U.URL,
-  srests: readonly SRest<readonly string[]>[],
+  srests: readonly SRest<string>[],
   benchmarkingName: string
 ) {
   return benchmarkPageMetric(

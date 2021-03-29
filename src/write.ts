@@ -94,7 +94,7 @@ function parseURL(str: string): Either<unknown, URL> {
  * @param bucket
  */
 function writeSRest(s3: S3Client, dirKey: string, bucket: string) {
-  return (srestData: SRest<URL[]>) =>
+  return (srestData: SRest<URL>) =>
     pipe(
       srestData,
       record.mapWithIndex((partKey, urls) => {
@@ -136,7 +136,7 @@ export type Config = {
 function fetchSrest_styleid(
   domain: string,
   token: string
-): ReaderTaskEither<string, any, SRest<string[]>> {
+): ReaderTaskEither<string, any, SRest<string>> {
   return (styleId: string) => {
     return () =>
       fetch(addSlash(domain) + `api/styles/${styleId}/versions/1/zrest`, {
@@ -180,7 +180,7 @@ export function readSrestFromSID({
         const s3Key = join(baseKey, styleID);
         const srestS3Key = pipe(
           srestStr,
-          record.map(array.map((x) => new URL(x))),
+          record.map(readonlyArray.map((x) => new URL(x))),
           writeSRest(s3, s3Key, bucket)
         );
 
