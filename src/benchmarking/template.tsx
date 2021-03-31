@@ -1,6 +1,6 @@
 import React from "react";
 import U from "url";
-import { SRest } from "../types";
+import { SRest } from "../types/Srest";
 
 export const hookDomain = "http://screenshotrequest.clo";
 export const timestampLabel = "closet viewer benchmark";

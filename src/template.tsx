@@ -1,7 +1,7 @@
 import React from "react";
 import * as U from "url";
 import { URL } from "url";
-import { SRest } from "./types";
+import { SRest } from "./types/Srest";
 
 export const hookDomain = "http://screenshotrequest.clo";
 export type StreamTemplate<A> = (

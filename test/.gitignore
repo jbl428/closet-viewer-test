@@ -9,3 +9,6 @@ zrest-wrongs
 test-alts
 alt-debug-images
 /debug/
+/zrest-debug-fail/
+/srest-debug-fail/
+/srest-debug-success/

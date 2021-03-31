@@ -12,7 +12,7 @@ import * as D from "io-ts/Decoder";
 import { concatMap, map, reduce, share } from "rxjs/operators";
 import { pipe } from "fp-ts/function";
 import { from, Observable, zip } from "rxjs";
-import { bracket, tryCatchK } from "fp-ts/TaskEither";
+import { bracket, taskEitherSeq, tryCatchK } from "fp-ts/TaskEither";
 import * as RTE from "fp-ts/ReaderTaskEither";
 import { ReaderTaskEither } from "fp-ts/ReaderTaskEither";
 
@@ -28,22 +28,22 @@ import {
 } from "fp-ts-rxjs/lib/ObservableEither";
 import { ReaderObservableEither } from "fp-ts-rxjs/lib/ReaderObservableEither";
 import {
-  array,
   either,
   reader,
+  readonlyArray,
   readonlyNonEmptyArray,
   record,
   taskEither,
 } from "fp-ts";
 import { none } from "fp-ts/Option";
 import { semigroupAll } from "fp-ts/Semigroup";
-import { AnswerData, tup } from "./types";
+import { tup } from "./types/types";
 import { S3Client } from "@aws-sdk/client-s3";
-import { teSequenceArrayConcat } from "./extension";
 import { sequenceT } from "fp-ts/Apply";
 import { downloadBufferFromS3 } from "./util";
 import { applyFacets, facetFromArray, Facets } from "./Facets";
 import { monoidSum } from "fp-ts/Monoid";
+import { AnswerDataS3Key, mapAnswerData } from "./types/AnswerData";
 
 const base64ToBuffer = (encoding: string) => Buffer.from(encoding, "base64");
 const cutDataURLHead = (dataURL: string) => {
@@ -201,7 +201,7 @@ function isDifferent([a, b]: [Buffer, Buffer]): boolean {
 }
 
 export function testDataSet<D>(
-  dataSet: { styleID: string; data: D; answer: AnswerData }[],
+  dataSet: { styleID: string; data: D; answer: AnswerDataS3Key }[],
   Bucket: string,
   s3: S3Client,
   debugImageDir: string,
@@ -279,20 +279,18 @@ export function testDataSet<D>(
 }
 
 function makeAnswerStream2(
-  testDataArr: readonly [string, AnswerData][],
+  testDataArr: readonly [string, AnswerDataS3Key][],
   Bucket: string,
   s3: S3Client
 ) {
   return from(testDataArr).pipe(
     map((x) => x[1]),
     map(
-      record.map(
-        array.map((s3key) =>
-          downloadBufferFromS3({ Bucket, Key: s3key.str }, s3)
-        )
+      mapAnswerData((s3key) =>
+        downloadBufferFromS3({ Bucket, Key: s3key.str }, s3)
       )
     ),
-    map(record.map(teSequenceArrayConcat)),
+    map(record.map(readonlyArray.sequence(taskEitherSeq))),
     map(
       record.map(
         taskEither.chainEitherK((buffers) => {

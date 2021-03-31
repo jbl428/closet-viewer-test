@@ -1,6 +1,7 @@
 import * as D from "io-ts/Decoder";
-import { S3Key_D, SRest_D_S3Key } from "../types";
+import { S3Key_D } from "../types/types";
 import { getStructMonoid, Monoid, monoidSum } from "fp-ts/Monoid";
+import { SRest_D_S3Key } from "../types/Srest";
 
 const BenchmarkingTask = D.sum("type")({
   bundleSize: D.type({

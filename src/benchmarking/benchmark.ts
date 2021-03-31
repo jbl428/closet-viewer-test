@@ -1,6 +1,6 @@
 import * as fflate from "fflate";
 import { AsyncUnzipInflate } from "fflate";
-import { TaskEither, tryCatchK } from "fp-ts/TaskEither";
+import { TaskEither, taskEitherSeq, tryCatchK } from "fp-ts/TaskEither";
 import { pipe } from "fp-ts/function";
 import { array, readonlyArray, task, taskEither } from "fp-ts";
 import {
@@ -18,7 +18,6 @@ import {
 import { URL } from "url";
 import { key2URL, srestS3KeyToURLStr } from "../util";
 import { S3Client } from "@aws-sdk/client-s3";
-import { teSequenceArrayConcat } from "../extension";
 import fetch from "node-fetch";
 import { v4 } from "uuid";
 import { DynamoM, encodeDynamoFormat } from "./util";
@@ -103,7 +102,7 @@ function benchmarkCore(
         )
       )
     ),
-    teSequenceArrayConcat,
+    array.sequence(taskEitherSeq),
     taskEither.map(
       readonlyArray.reduceRight({}, (result, agg: Result) => {
         return { ...result, ...agg };
@@ -152,7 +151,7 @@ function benchmarkUnit(
       return pipe(
         taskData.srests,
         array.map(srestS3KeyToURLStr({ Bucket, s3 })),
-        teSequenceArrayConcat,
+        array.sequence(taskEitherSeq),
         taskEither.chainW((srests) => {
           return benchmarkSrestLoadingWithSrests(libURL, srests, taskData.name);
           // return pipe(t,taskEither.mapLeft(x=>x as any))
@@ -162,7 +161,7 @@ function benchmarkUnit(
       return pipe(
         taskData.zrestS3Keys,
         array.map((s3k) => key2URL(s3k.str, Bucket, s3)),
-        teSequenceArrayConcat,
+        array.sequence(taskEitherSeq),
         taskEither.chain((zrestURLs) => {
           return benchmarkZrestLoading(
             libURL,

@@ -35,9 +35,9 @@ import { fromTaskEither, toTaskEither } from "fp-ts-rxjs/lib/ObservableEither";
 import { compact } from "fp-ts-rxjs/lib/Observable";
 import { sequenceT } from "fp-ts/Apply";
 import { pipe } from "fp-ts/function";
-import { SRest } from "../types";
 import { withDownloadedZrests } from "./util";
 import * as D from "io-ts/Decoder";
+import { SRest } from "../types/Srest";
 
 const _simpleGot = (urlStr: string) => got(urlStr);
 const simpleGot = tryCatchK(_simpleGot, (x) => x);

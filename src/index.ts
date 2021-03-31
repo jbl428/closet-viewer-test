@@ -1,15 +1,16 @@
-import { addSlash, SRestTestDataSet, ZRestTestDataSet } from "./types";
+import { addSlash } from "./types/types";
 import { S3Client } from "@aws-sdk/client-s3";
 import { URL } from "url";
 import { pipe } from "fp-ts/function";
 import { array, record, taskEither } from "fp-ts";
 import { key2URL, srestS3KeyToURLStr } from "./util";
-import { teSequenceArrayConcat } from "./extension";
 import { templateSrest, templateZrest } from "./template";
 import { testDataSet } from "./functions";
 import { Config, copyToS3, readSrestFromSID, readZrestFromSID } from "./write";
 import fetch from "node-fetch";
-import { tryCatchK } from "fp-ts/TaskEither";
+import { taskEitherSeq, tryCatchK } from "fp-ts/TaskEither";
+import { SRestTestDataSet } from "./types/Srest";
+import { ZRestTestDataSet } from "./types/Zrest";
 
 export function testSrest(
   srestTestDataSet: SRestTestDataSet,
@@ -31,7 +32,7 @@ export function testSrest(
   return pipe(
     _srests,
     array.map(srestS3KeyToURLStr({ Bucket, s3 })),
-    teSequenceArrayConcat,
+    array.sequence(taskEitherSeq),
     taskEither.chain((srests) => {
       const aaa = srests.map((srest, idx) => ({
         data: srest,
@@ -62,8 +63,9 @@ export function testZrest(
   const answers = arr.map(([_, x]) => x.answers);
   const keys = arr.map(([_, x]) => x.key);
 
-  const zrestURLs = teSequenceArrayConcat(
-    keys.map((x) => key2URL(x.str, Bucket, s3))
+  const zrestURLs = pipe(
+    keys.map((x) => key2URL(x.str, Bucket, s3)),
+    array.sequence(taskEitherSeq)
   );
 
   return pipe(

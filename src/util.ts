@@ -1,6 +1,6 @@
 import fetch from "node-fetch";
-import { reader, readonlyArray, record, taskEither } from "fp-ts";
-import { tryCatchK } from "fp-ts/TaskEither";
+import { reader } from "fp-ts";
+import { taskEitherSeq, tryCatchK } from "fp-ts/TaskEither";
 import { identity, pipe } from "fp-ts/function";
 import {
   GetObjectCommand,
@@ -9,9 +9,9 @@ import {
 } from "@aws-sdk/client-s3";
 import { Readable } from "stream";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { S3Key, SRest } from "./types";
-import { teSequenceArrayConcat } from "./extension";
+import { S3Key } from "./types/types";
 import { URL } from "url";
+import { mapSrest, sequenceSrest, SRest } from "./types/Srest";
 
 const _downloadBufferFromS3 = (
   config: { Bucket: string; Key: string },
@@ -92,9 +92,8 @@ export function srestS3KeyToURLStr({
   return (srest: SRest<S3Key>) => {
     return pipe(
       srest,
-      record.map(readonlyArray.map((key) => key2URL(key.str, Bucket, s3))),
-      record.map(teSequenceArrayConcat),
-      record.sequence(taskEither.taskEither)
+      mapSrest((key) => key2URL(key.str, Bucket, s3)),
+      sequenceSrest(taskEitherSeq)
     );
   };
 }

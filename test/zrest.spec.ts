@@ -1,12 +1,12 @@
 import { pipe } from "fp-ts/function";
 import * as fs from "fs";
 import { resolve } from "path";
-import { decodeZRestTestDataSet } from "../src/types";
 import { either, taskEither } from "fp-ts";
 import { testDataProvision } from "./test-data-provision";
 import { S3Client } from "@aws-sdk/client-s3";
 import { isRight } from "fp-ts/Either";
 import { testZrest } from "../src";
+import { decodeZRestTestDataSet } from "../src/types/Zrest";
 
 test(
   "zrest-fail",
@@ -31,7 +31,7 @@ test(
             },
           }),
           testDataProvision.bad,
-          resolve(__dirname, "debug")
+          resolve(__dirname, "zrest-debug-fail")
         );
       }),
       either.sequence(taskEither.taskEither),
@@ -72,7 +72,7 @@ test(
             },
           }),
           testDataProvision.liburl,
-          resolve(__dirname, "debug")
+          resolve(__dirname, "zrest-debug-success")
         );
       }),
       either.sequence(taskEither.taskEither),

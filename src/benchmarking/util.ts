@@ -5,6 +5,7 @@ import fs from "fs";
 import { ReaderTaskEither } from "fp-ts/ReaderTaskEither";
 import { pipe } from "fp-ts/function";
 import {
+  array,
   either,
   reader,
   readerEither,
@@ -15,8 +16,7 @@ import { downloadBuffer } from "../util";
 import { ReaderEither } from "fp-ts/ReaderEither";
 import { v4 } from "uuid";
 import { left, right } from "fp-ts/Either";
-import { bracket } from "fp-ts/TaskEither";
-import { teSequenceArrayConcat } from "../extension";
+import { bracket, taskEitherSeq } from "fp-ts/TaskEither";
 import * as D from "io-ts/Decoder";
 import * as E from "fp-ts/Either";
 import * as R from "fp-ts/Record";
@@ -31,7 +31,7 @@ export function withDownloadedZrests<_A>(
 
   const downloadTask = pipe(
     zresturls.map((url) => cacheFile_downloadDir(url.toString())(zrestsDir)),
-    teSequenceArrayConcat
+    array.sequence(taskEitherSeq)
   );
   const releaseTask = () => {
     console.log("removing temporary directory ", zrestsDir, " ...");

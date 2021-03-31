@@ -10,7 +10,7 @@ import { S3Client } from "@aws-sdk/client-s3";
 import { pipe } from "fp-ts/function";
 import { either, readonlyArray, record } from "fp-ts";
 import { getLastSemigroup } from "fp-ts/Semigroup";
-import { tup } from "../types";
+import { tup } from "../types/types";
 import { url } from "../util";
 import { Concat, Of } from "io-ts/FreeSemigroup";
 

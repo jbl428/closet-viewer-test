@@ -10,7 +10,7 @@ import {
   taskEither,
 } from "fp-ts";
 import { ReaderTaskEither } from "fp-ts/ReaderTaskEither";
-import { TaskEither, tryCatchK } from "fp-ts/TaskEither";
+import { TaskEither, taskEitherSeq, tryCatchK } from "fp-ts/TaskEither";
 
 import fetch from "node-fetch";
 import { basename, join } from "path";
@@ -18,22 +18,15 @@ import { URL } from "url";
 import { from } from "rxjs";
 import { concatMap, first, map, toArray } from "rxjs/operators";
 import { toTaskEither } from "fp-ts-rxjs/lib/ObservableEither";
-import {
-  addSlash,
-  decodeSRestResponse,
-  S3Key,
-  SRest,
-  SRestPart,
-  tup,
-  ZRestPart,
-} from "./types";
+import { addSlash, S3Key, tup } from "./types/types";
 import { downloadBuffer, uploads3 } from "./util";
 import { Facets } from "./Facets";
 import { hookDomain, templateSrest, templateZrest } from "./template";
 import { runWithBrowser, streamScreenshots_browser } from "./functions";
-import { teSequenceArrayConcat } from "./extension";
 import { fromFoldable } from "fp-ts/Record";
 import { getLastSemigroup } from "fp-ts/Semigroup";
+import { decodeSRestResponse, mapSrest, SRest, SRestPart } from "./types/Srest";
+import { ZRestPart } from "./types/Zrest";
 
 function fetchZrestURL_styleid(
   domain: string,
@@ -180,7 +173,7 @@ export function readSrestFromSID({
         const s3Key = join(baseKey, styleID);
         const srestS3Key = pipe(
           srestStr,
-          record.map(readonlyArray.map((x) => new URL(x))),
+          mapSrest((x) => new URL(x)),
           writeSRest(s3, s3Key, bucket)
         );
 
@@ -270,7 +263,7 @@ export function copyToS3(
               })
             );
           }),
-          teSequenceArrayConcat,
+          readonlyArray.sequence(taskEitherSeq),
           taskEither.map((dataset) => {
             return fromFoldable(
               getLastSemigroup<typeof dataset[0][1]>(),
