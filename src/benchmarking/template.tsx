@@ -83,7 +83,10 @@ export const templateForFPS = (
 
 export const measureCue = "measure cue";
 
-function makeRecursiveTemplateJSCode(srests: readonly SRest<string>[]): string {
+function makeRecursiveTemplateJSCode(
+  srests: readonly SRest<string>[],
+  textureQuality: string
+): string {
   if (srests.length === 0) {
     return `fetch("${hookDomain}", { method: "DELETE", });`;
   } else {
@@ -94,14 +97,17 @@ function makeRecursiveTemplateJSCode(srests: readonly SRest<string>[]): string {
         )}, (x)=>{}, 0, ()=>{
           fetch("${hookDomain}", { method: "POST", body: "${measureCue}"});
           console.timeStamp("${timestampLabel}")
-          ${makeRecursiveTemplateJSCode(srests.slice(1))}
-        })`;
+          ${makeRecursiveTemplateJSCode(srests.slice(1), textureQuality)}
+        },
+        ${textureQuality}
+        )`;
   }
 }
 
 function makeTemplateJSCode(
   libURL: U.URL,
-  srests: readonly SRest<string>[]
+  srests: readonly SRest<string>[],
+  textureQuality: string
 ): string {
   const initCode = `closet.viewer.init({
   element: "target",
@@ -109,18 +115,21 @@ function makeTemplateJSCode(
   height: 512,
   stats: true,
 });`;
-  return initCode + makeRecursiveTemplateJSCode(srests);
+  return initCode + makeRecursiveTemplateJSCode(srests, textureQuality);
 }
 
 export const templateSrestBenchmarking = (
   libURL: U.URL,
-  srests: readonly SRest<string>[]
+  srests: readonly SRest<string>[],
+  textureQuality: string
 ) => (
   <div>
     <div id="target" style={{ width: 512, height: 512 }} />
     <script type="text/javascript" src={libURL.toString()} />
     <script
-      dangerouslySetInnerHTML={{ __html: makeTemplateJSCode(libURL, srests) }}
+      dangerouslySetInnerHTML={{
+        __html: makeTemplateJSCode(libURL, srests, textureQuality),
+      }}
     />
   </div>
 );

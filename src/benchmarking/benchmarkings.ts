@@ -227,7 +227,24 @@ export function benchmarkSrestLoadingWithSrests(
 ) {
   return benchmarkPageMetric(
     liburl,
-    templateSrestBenchmarking(liburl, srests),
+    templateSrestBenchmarking(liburl, srests, '{ type: "original" }'),
+    benchmarkingName,
+    srests.length
+  );
+}
+
+export function benchmarkSrestLoadingWithSrestsWithOptimizedTexture(
+  liburl: U.URL,
+  srests: readonly SRest<string>[],
+  benchmarkingName: string
+) {
+  return benchmarkPageMetric(
+    liburl,
+    templateSrestBenchmarking(
+      liburl,
+      srests,
+      '{ type: "optimized", fit: "scale-down", width: 64, height: 64 }'
+    ),
     benchmarkingName,
     srests.length
   );

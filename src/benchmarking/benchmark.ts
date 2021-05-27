@@ -13,6 +13,7 @@ import {
   benchmarkBundleSize,
   benchmarkFPS,
   benchmarkSrestLoadingWithSrests,
+  benchmarkSrestLoadingWithSrestsWithOptimizedTexture,
   benchmarkZrestLoading,
 } from "./benchmarkings";
 import { URL } from "url";
@@ -154,6 +155,20 @@ function benchmarkUnit(
         array.sequence(taskEitherSeq),
         taskEither.chainW((srests) => {
           return benchmarkSrestLoadingWithSrests(libURL, srests, taskData.name);
+          // return pipe(t,taskEither.mapLeft(x=>x as any))
+        })
+      );
+    case "optimizedTexture":
+      return pipe(
+        taskData.srests,
+        array.map(srestS3KeyToURLStr({ Bucket, s3 })),
+        array.sequence(taskEitherSeq),
+        taskEither.chainW((srests) => {
+          return benchmarkSrestLoadingWithSrestsWithOptimizedTexture(
+            libURL,
+            srests,
+            taskData.name
+          );
           // return pipe(t,taskEither.mapLeft(x=>x as any))
         })
       );

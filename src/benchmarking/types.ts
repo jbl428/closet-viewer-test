@@ -29,6 +29,11 @@ const BenchmarkingTask = D.sum("type")({
     viewWidth: D.number,
     viewHeight: D.number,
   }),
+  optimizedTexture: D.type({
+    type: D.literal("optimizedTexture"),
+    name: D.string,
+    srests: D.array(SRest_D_S3Key),
+  }),
 });
 export type BenchmarkingTask = D.TypeOf<typeof BenchmarkingTask>;
 export const decodeBenchmarkingTask = BenchmarkingTask.decode;
