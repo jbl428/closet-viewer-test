@@ -133,3 +133,5 @@ export function getClosetToken({ domain, email, password }: Account) {
     return new Error("Getting Token failed");
   })();
 }
+
+export { fetchSrest_styleid } from "./write";
