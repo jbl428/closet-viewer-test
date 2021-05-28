@@ -126,7 +126,7 @@ export type Config = {
   bucket: string;
 };
 
-function fetchSrest_styleid(
+export function fetchSrest_styleid(
   domain: string,
   token: string
 ): ReaderTaskEither<string, any, SRest<string>> {
