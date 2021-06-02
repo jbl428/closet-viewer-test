@@ -1,7 +1,5 @@
-import { pipe } from "fp-ts/function";
 import * as fs from "fs";
 import { resolve } from "path";
-import { either, taskEither } from "fp-ts";
 import {
   _BUCKET,
   makeS3Client,
@@ -9,7 +7,6 @@ import {
 } from "./test-data-provision";
 import { S3Client } from "@aws-sdk/client-s3";
 import { isLeft, isRight } from "fp-ts/Either";
-import { decodeSRestTestDataSet } from "../src/types/Srest";
 import { URL } from "url";
 import { srest } from "../src/index";
 
@@ -32,27 +29,19 @@ beforeAll(() => {
 test(
   "srest-success",
   async () => {
-    const aa = pipe(
-      fs.readFileSync(resolve(__dirname, "srest-test-data-set.json"), "utf-8"),
-      JSON.parse,
-      decodeSRestTestDataSet,
-      either.map((sDataset) => {
-        return srest.test(
-          sDataset,
-          "viewer-test-model",
-          new S3Client({
-            region: "ap-northeast-2",
-            credentials: {
-              accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-              secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-            },
-          }),
-          testDataProvision.liburl,
-          successDebugDir
-        );
+    const jsonPath = resolve(__dirname, "srest-test-data-set.json");
+    const aa = srest.test(
+      jsonPath,
+      "viewer-test-model",
+      new S3Client({
+        region: "ap-northeast-2",
+        credentials: {
+          accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+        },
       }),
-      either.sequence(taskEither.taskEither),
-      taskEither.chainEitherKW((x) => x)
+      testDataProvision.liburl,
+      successDebugDir
     );
 
     const result = await aa();
@@ -69,27 +58,19 @@ test(
 test(
   "srest-type-error",
   async () => {
-    const aa = pipe(
-      fs.readFileSync(resolve(__dirname, "srest-test-data-set.json"), "utf-8"),
-      JSON.parse,
-      decodeSRestTestDataSet,
-      either.map((sDataset) => {
-        return srest.test(
-          sDataset,
-          "viewer-test-model",
-          new S3Client({
-            region: "ap-northeast-2",
-            credentials: {
-              accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-              secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-            },
-          }),
-          testDataProvision.bad,
-          typeErrorDebugDir
-        );
+    const jsonpath = resolve(__dirname, "srest-test-data-set.json");
+    const aa = srest.test(
+      jsonpath,
+      "viewer-test-model",
+      new S3Client({
+        region: "ap-northeast-2",
+        credentials: {
+          accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+        },
       }),
-      either.sequence(taskEither.taskEither),
-      taskEither.chainEitherKW((x) => x)
+      testDataProvision.bad,
+      typeErrorDebugDir
     );
 
     const result = await aa();
@@ -106,29 +87,21 @@ test(
 test(
   "srest-fail",
   async () => {
-    const aa = pipe(
-      fs.readFileSync(resolve(__dirname, "srest-test-data-set.json"), "utf-8"),
-      JSON.parse,
-      decodeSRestTestDataSet,
-      either.map((sDataset) => {
-        return srest.test(
-          sDataset,
-          "viewer-test-model",
-          new S3Client({
-            region: "ap-northeast-2",
-            credentials: {
-              accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-              secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-            },
-          }),
-          new URL(
-            "https://viewer-library.s3.ap-northeast-2.amazonaws.com/reverse-render-order.js"
-          ),
-          failDebugDir
-        );
+    const jsonPath = resolve(__dirname, "srest-test-data-set.json");
+    const aa = srest.test(
+      jsonPath,
+      "viewer-test-model",
+      new S3Client({
+        region: "ap-northeast-2",
+        credentials: {
+          accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+        },
       }),
-      either.sequence(taskEither.taskEither),
-      taskEither.chainEitherKW((x) => x)
+      new URL(
+        "https://viewer-library.s3.ap-northeast-2.amazonaws.com/reverse-render-order.js"
+      ),
+      failDebugDir
     );
 
     const result = await aa();

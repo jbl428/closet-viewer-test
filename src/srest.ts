@@ -3,7 +3,6 @@ import {
   mapSrest,
   sequenceSrest,
   SRestPart,
-  SRestTestDataSet,
 } from "./types/Srest";
 import { S3Client } from "@aws-sdk/client-s3";
 import { URL } from "url";
@@ -61,38 +60,45 @@ export function regenerateAnswerData(
 }
 
 export function test(
-  srestTestDataSet: SRestTestDataSet,
+  dataSetJsonPath: string,
   Bucket: string,
   s3: S3Client,
   libURL: URL,
   debugImageDir: string
 ) {
-  const srestTestDataArr = pipe(
-    srestTestDataSet,
-    record.toArray
-    // record.collect((_, v) => v)
-  );
-
-  const styleIDs = srestTestDataArr.map(([x]) => x);
-  const answers = srestTestDataArr.map(([_, x]) => x.answers);
-  const _srests = srestTestDataArr.map(([_, x]) => x.srest);
-
   return pipe(
-    _srests,
-    array.map(srestS3KeyToURLStr({ Bucket, s3 })),
-    array.sequence(taskEitherSeq),
-    taskEither.chain((srests) => {
-      const aaa = srests.map((srest, idx) => ({
-        data: srest,
-        styleID: styleIDs[idx],
-        answer: answers[idx],
-      }));
-      return testDataSet(
-        aaa,
-        Bucket,
-        s3,
-        debugImageDir,
-        templateSrest(libURL)(srests)
+    JSON.parse(fs.readFileSync(dataSetJsonPath, "utf-8")),
+    decodeSRestTestDataSet,
+    taskEither.fromEither,
+    taskEither.chain((srestTestDataSet) => {
+      const srestTestDataArr = pipe(
+        srestTestDataSet,
+        record.toArray
+        // record.collect((_, v) => v)
+      );
+
+      const styleIDs = srestTestDataArr.map(([x]) => x);
+      const answers = srestTestDataArr.map(([_, x]) => x.answers);
+      const _srests = srestTestDataArr.map(([_, x]) => x.srest);
+
+      return pipe(
+        _srests,
+        array.map(srestS3KeyToURLStr({ Bucket, s3 })),
+        array.sequence(taskEitherSeq),
+        taskEither.chain((srests) => {
+          const aaa = srests.map((srest, idx) => ({
+            data: srest,
+            styleID: styleIDs[idx],
+            answer: answers[idx],
+          }));
+          return testDataSet(
+            aaa,
+            Bucket,
+            s3,
+            debugImageDir,
+            templateSrest(libURL)(srests)
+          );
+        })
       );
     })
   );
