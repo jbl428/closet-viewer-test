@@ -1,14 +1,7 @@
 import { S3Client } from "@aws-sdk/client-s3";
 import { Either, left, right } from "fp-ts/Either";
 import { identity, pipe } from "fp-ts/function";
-import {
-  array,
-  either,
-  reader,
-  readonlyArray,
-  record,
-  taskEither,
-} from "fp-ts";
+import { array, either, readonlyArray, record, taskEither } from "fp-ts";
 import { ReaderTaskEither } from "fp-ts/ReaderTaskEither";
 import { TaskEither, taskEitherSeq, tryCatchK } from "fp-ts/TaskEither";
 
@@ -21,12 +14,11 @@ import { toTaskEither } from "fp-ts-rxjs/lib/ObservableEither";
 import { addSlash, S3Key, tup } from "./types/types";
 import { downloadBuffer, uploads3 } from "./util";
 import { Facets } from "./Facets";
-import { hookDomain, templateSrest, templateZrest } from "./template";
+import { hookDomain } from "./template";
 import { runWithBrowser, streamScreenshots_browser } from "./functions";
-import { fromFoldable } from "fp-ts/Record";
-import { getLastSemigroup } from "fp-ts/Semigroup";
 import { decodeSRestResponse, mapSrest, SRest, SRestPart } from "./types/Srest";
 import { ZRestPart } from "./types/Zrest";
+import { Browser } from "puppeteer";
 
 function fetchZrestURL_styleid(
   domain: string,
@@ -158,120 +150,84 @@ export function fetchSrest_styleid(
   };
 }
 
-export function readSrestFromSID({
+export function copySrestFromCLOSETToS3({
   domain,
   token,
-  libURL,
   s3,
   baseKey,
   bucket,
 }: Config) {
-  return (styleID: string): TaskEither<unknown, [JSX.Element, SRestPart]> =>
+  return (styleID: string): TaskEither<unknown, SRestPart> =>
     pipe(
       fetchSrest_styleid(domain, token)(styleID),
       taskEither.chain((srestStr) => {
         const s3Key = join(baseKey, styleID);
-        const srestS3Key = pipe(
+        return pipe(
           srestStr,
           mapSrest((x) => new URL(x)),
-          writeSRest(s3, s3Key, bucket)
-        );
-
-        const jsx = templateSrest(new URL(libURL))([srestStr]);
-        return pipe(
-          srestS3Key,
-          taskEither.map((srest) =>
-            tup(jsx, { srest: pipe(srest, record.map(readonlyArray.toArray)) })
-          )
+          writeSRest(s3, s3Key, bucket),
+          taskEither.map((srest) => ({
+            srest: pipe(srest, record.map(readonlyArray.toArray)),
+          }))
         );
       })
     );
 }
 
-export function readZrestFromSID({
+export function copyZrestFromCLOSETToS3({
   domain,
   token,
-  libURL,
   s3,
   baseKey,
   bucket,
 }: Config) {
-  return (styleID: string): TaskEither<unknown, [JSX.Element, ZRestPart]> => {
+  return (styleID: string): TaskEither<unknown, ZRestPart> => {
     return pipe(
       fetchZrestURL_styleid(domain, token)(styleID),
       taskEither.chainEitherK(parseURL),
       taskEither.chain((zrestURL) => {
         const zrestKey = join(baseKey, styleID, `viewer.zrest`);
 
-        const zrestUpload = pipe(
+        return pipe(
           downloadBuffer(zrestURL.toString()),
           taskEither.chain((buffer) =>
             uploads3(s3, zrestKey, bucket)({ _tag: "buffer", buffer })
           ),
-          taskEither.map(() => new S3Key(zrestKey))
-        );
-        const jsx = templateZrest(new URL(libURL))([zrestURL]);
-        return pipe(
-          zrestUpload,
-          taskEither.map((key) => tup(jsx, { key }))
+          taskEither.map(() => ({
+            key: new S3Key(zrestKey),
+          }))
         );
       })
     );
   };
 }
 
-export function copyToS3(
-  styleIDs: readonly string[],
+export function writeOutputsToS3(
   s3: S3Client,
   bucket: string,
   baseS3Key: string,
-  job: (
-    config: Config
-  ) => (
-    styleID: string
-  ) => TaskEither<unknown, [JSX.Element, ZRestPart | SRestPart]>
+  items: [string, JSX.Element][]
 ) {
-  return pipe(
-    job,
-    reader.map((styleIDReader) => {
-      return runWithBrowser((browser) => {
+  const browserReader = (browser: Browser) => {
+    return pipe(
+      items,
+      array.map(([styleID, jsx]) => {
+        const answerStream = streamScreenshots_browser(
+          jsx,
+          hookDomain
+        )(browser);
+        const answerForEachFacet = toTaskEither(answerStream.pipe(first()));
         return pipe(
-          styleIDs,
-          readonlyArray.map((styleID) => {
-            return pipe(
-              styleIDReader(styleID),
-              taskEither.chain(([jsx, obj]) => {
-                const answerStream = streamScreenshots_browser(
-                  jsx,
-                  hookDomain
-                )(browser);
-                const answerForEachFacet = toTaskEither(
-                  answerStream.pipe(first())
-                );
-
-                return pipe(
-                  answerForEachFacet,
-                  taskEither.map(record.map((x) => [x])),
-                  taskEither.chain(
-                    writeAnswer(s3, bucket, join(baseS3Key, styleID, "answers"))
-                  ),
-                  taskEither.map((answers) => {
-                    const o = { answers, ...obj };
-                    return tup(styleID, o);
-                  })
-                );
-              })
-            );
-          }),
-          readonlyArray.sequence(taskEitherSeq),
-          taskEither.map((dataset) => {
-            return fromFoldable(
-              getLastSemigroup<typeof dataset[0][1]>(),
-              readonlyArray.readonlyArray
-            )(dataset);
-          })
+          answerForEachFacet,
+          taskEither.map(record.map((x) => [x])),
+          taskEither.chain(
+            writeAnswer(s3, bucket, join(baseS3Key, styleID, "answers"))
+          ),
+          taskEither.map((answers) => tup(styleID, answers))
         );
-      });
-    })
-  );
+      }),
+      array.sequence(taskEitherSeq)
+    );
+  };
+  return runWithBrowser(browserReader);
 }

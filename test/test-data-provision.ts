@@ -1,4 +1,5 @@
 import { URL } from "url";
+import { S3Client } from "@aws-sdk/client-s3";
 
 export const testDataProvision = {
   bad: new URL("https://viewer-library.s3.ap-northeast-2.amazonaws.com/d.js"),
@@ -22,3 +23,15 @@ export const testDataProvision = {
     "https://viewer-test-model.s3.ap-northeast-2.amazonaws.com/00000005.zrest",
   ].map((x) => new URL(x)),
 };
+
+export function makeS3Client() {
+  return new S3Client({
+    region: "ap-northeast-2",
+    credentials: {
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+    },
+  });
+}
+
+export const _BUCKET = "viewer-test-model";

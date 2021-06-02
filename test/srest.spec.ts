@@ -2,12 +2,16 @@ import { pipe } from "fp-ts/function";
 import * as fs from "fs";
 import { resolve } from "path";
 import { either, taskEither } from "fp-ts";
-import { testDataProvision } from "./test-data-provision";
+import {
+  _BUCKET,
+  makeS3Client,
+  testDataProvision,
+} from "./test-data-provision";
 import { S3Client } from "@aws-sdk/client-s3";
-import { isRight } from "fp-ts/Either";
-import { testSrest } from "../src";
+import { isLeft, isRight } from "fp-ts/Either";
 import { decodeSRestTestDataSet } from "../src/types/Srest";
 import { URL } from "url";
+import { srest } from "../src/index";
 
 const successDebugDir = resolve(__dirname, "srest-debug-success");
 const typeErrorDebugDir = resolve(__dirname, "srest-debug-type-error");
@@ -24,6 +28,7 @@ beforeAll(() => {
     fs.rmdirSync(failDebugDir, { recursive: true });
   }
 });
+
 test(
   "srest-success",
   async () => {
@@ -32,7 +37,7 @@ test(
       JSON.parse,
       decodeSRestTestDataSet,
       either.map((sDataset) => {
-        return testSrest(
+        return srest.test(
           sDataset,
           "viewer-test-model",
           new S3Client({
@@ -69,7 +74,7 @@ test(
       JSON.parse,
       decodeSRestTestDataSet,
       either.map((sDataset) => {
-        return testSrest(
+        return srest.test(
           sDataset,
           "viewer-test-model",
           new S3Client({
@@ -106,7 +111,7 @@ test(
       JSON.parse,
       decodeSRestTestDataSet,
       either.map((sDataset) => {
-        return testSrest(
+        return srest.test(
           sDataset,
           "viewer-test-model",
           new S3Client({
@@ -135,4 +140,26 @@ test(
     }
   },
   1000 * 60 * 3
+);
+
+test(
+  "answer regeneration",
+  () => {
+    return srest
+      .regenerateAnswerData(
+        resolve(__dirname, "srest-test-data-set.json"),
+        resolve(__dirname, "srest-regen.json"),
+        makeS3Client(),
+        _BUCKET,
+        "regen",
+        testDataProvision.liburl
+      )()
+      .then((e) => {
+        if (isLeft(e)) {
+          console.log(e.left);
+        }
+        expect(isRight(e)).toBeTruthy();
+      });
+  },
+  1000 * 60 * 2
 );

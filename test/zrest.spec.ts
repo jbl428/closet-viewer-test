@@ -2,11 +2,15 @@ import { pipe } from "fp-ts/function";
 import * as fs from "fs";
 import { resolve } from "path";
 import { either, taskEither } from "fp-ts";
-import { testDataProvision } from "./test-data-provision";
+import {
+  _BUCKET,
+  makeS3Client,
+  testDataProvision,
+} from "./test-data-provision";
 import { S3Client } from "@aws-sdk/client-s3";
-import { isRight } from "fp-ts/Either";
-import { testZrest } from "../src";
+import { isLeft, isRight } from "fp-ts/Either";
 import { decodeZRestTestDataSet } from "../src/types/Zrest";
+import { zrest } from "../src/index";
 
 test(
   "zrest-fail",
@@ -20,7 +24,7 @@ test(
       JSON.parse,
       decodeZRestTestDataSet,
       either.map((zdataset) => {
-        return testZrest(
+        return zrest.test(
           zdataset,
           "viewer-test-model",
           new S3Client({
@@ -61,7 +65,7 @@ test(
       JSON.parse,
       decodeZRestTestDataSet,
       either.map((zdataset) => {
-        return testZrest(
+        return zrest.test(
           zdataset,
           "viewer-test-model",
           new S3Client({
@@ -88,4 +92,25 @@ test(
     }
   },
   1000 * 60 * 3
+);
+test(
+  "regen",
+  () => {
+    return zrest
+      .regenerateAnswerData(
+        resolve(__dirname, "zrest-test-data-set.json"),
+        resolve(__dirname, "zrest-regen.json"),
+        makeS3Client(),
+        _BUCKET,
+        "regen",
+        testDataProvision.liburl
+      )()
+      .then((e) => {
+        if (isLeft(e)) {
+          console.log(e);
+        }
+        expect(isRight(e)).toBeTruthy();
+      });
+  },
+  1000 * 60 * 2
 );
