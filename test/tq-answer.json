@@ -1,0 +1,25 @@
+{
+  "bucket": "viewer-test-model",
+  "baseS3Key": "tq",
+  "styleID": "75db4f18f65c440584a80c407ff6194c",
+  "answer": {
+    "back": [
+      "tq/75db4f18f65c440584a80c407ff6194c/answers/answers/back/0.png"
+    ],
+    "bottom": [
+      "tq/75db4f18f65c440584a80c407ff6194c/answers/answers/bottom/0.png"
+    ],
+    "front": [
+      "tq/75db4f18f65c440584a80c407ff6194c/answers/answers/front/0.png"
+    ],
+    "left": [
+      "tq/75db4f18f65c440584a80c407ff6194c/answers/answers/left/0.png"
+    ],
+    "right": [
+      "tq/75db4f18f65c440584a80c407ff6194c/answers/answers/right/0.png"
+    ],
+    "top": [
+      "tq/75db4f18f65c440584a80c407ff6194c/answers/answers/top/0.png"
+    ]
+  }
+}

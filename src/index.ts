@@ -34,4 +34,5 @@ export function getClosetToken({ domain, email, password }: Account) {
 export { fetchSrest_styleid } from "./write";
 import * as zrest from "./zrest";
 import * as srest from "./srest";
-export { zrest, srest };
+import * as textureQuality from "./texture-quality";
+export { zrest, srest, textureQuality };

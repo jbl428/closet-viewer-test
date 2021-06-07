@@ -200,8 +200,8 @@ function isDifferent([a, b]: [Buffer, Buffer]): boolean {
   return a.compare(b) !== 0;
 }
 
-export function testDataSet<D>(
-  dataSet: { styleID: string; data: D; answer: AnswerDataS3Key }[],
+export function testDataSet(
+  dataSet: { styleID: string; answer: AnswerDataS3Key }[],
   Bucket: string,
   s3: S3Client,
   debugImageDir: string,
