@@ -57,3 +57,5 @@ export const applyFacets: Apply1<URI> = {
     );
   },
 };
+export const mapFacets = <A, B>(f: (a: A) => B) => (A: Facets<A>): Facets<B> =>
+  record.map(f)(A);
