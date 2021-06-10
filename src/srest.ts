@@ -1,5 +1,5 @@
 import {
-  decodeSRestTestDataSet,
+  decodeSRestTestDataSetInput,
   mapSrest,
   sequenceSrest,
   SRestPart,
@@ -7,13 +7,30 @@ import {
 import { S3Client } from "@aws-sdk/client-s3";
 import { URL } from "url";
 import { pipe } from "fp-ts/function";
-import { array, readonlyArray, record, taskEither } from "fp-ts";
+import {
+  array,
+  either,
+  eq,
+  ord,
+  record,
+  semigroup,
+  set,
+  taskEither,
+} from "fp-ts";
 import { key2URL, srestS3KeyToURLStr } from "./util";
 import { taskEitherSeq } from "fp-ts/TaskEither";
 import { testDataSet } from "./functions";
 import { templateSrest } from "./template";
 import * as fs from "fs";
 import { writeOutputsToS3 } from "./write";
+import {
+  AnswerDataSet,
+  AnswerDataT,
+  decodeAnswerDataSet,
+  mapAnswerDataGenericS3KeyToAnswerDataS3Key,
+} from "./types/AnswerData";
+import { S3Key } from "./types/types";
+import { sequenceT } from "fp-ts/Apply";
 
 export function regenerateAnswerData(
   jsonPath: string,
@@ -23,7 +40,7 @@ export function regenerateAnswerData(
   baseS3Key: string,
   libURL: URL
 ) {
-  const dataSet = decodeSRestTestDataSet(
+  const dataSet = decodeSRestTestDataSetInput(
     JSON.parse(fs.readFileSync(jsonPath, "utf-8"))
   );
   return pipe(
@@ -45,14 +62,22 @@ export function regenerateAnswerData(
         taskEither.chain((idJSXtuples) => {
           return writeOutputsToS3(s3, bucket, baseS3Key, idJSXtuples);
         }),
-        taskEither.map((writeResults) => {
-          for (const [styleID, answer] of writeResults) {
-            dataSet[styleID].answers = pipe(
-              answer,
-              record.map(readonlyArray.toArray)
-            );
-          }
-          fs.writeFileSync(outJsonPath, JSON.stringify(dataSet, undefined, 2));
+        taskEither.map((writeResults: [string, AnswerDataT<S3Key>][]) => {
+          const answerDataSet: AnswerDataSet = pipe(
+            writeResults,
+            record.fromFoldable(
+              semigroup.getLastSemigroup<AnswerDataT<S3Key>>(),
+              array.Foldable
+            ),
+            record.map((x) => ({
+              answers: mapAnswerDataGenericS3KeyToAnswerDataS3Key(x),
+            }))
+          );
+
+          fs.writeFileSync(
+            outJsonPath,
+            JSON.stringify(answerDataSet, undefined, 2)
+          );
         })
       );
     })
@@ -61,30 +86,47 @@ export function regenerateAnswerData(
 
 export function test(
   dataSetJsonPath: string,
+  answerJsonPath: string,
   Bucket: string,
   s3: S3Client,
   libURL: URL,
   debugImageDir: string
 ) {
-  return pipe(
+  const dataSet = pipe(
     JSON.parse(fs.readFileSync(dataSetJsonPath, "utf-8")),
-    decodeSRestTestDataSet,
+    decodeSRestTestDataSetInput
+  );
+  const answerSet = pipe(
+    JSON.parse(fs.readFileSync(answerJsonPath, "utf-8")),
+    decodeAnswerDataSet
+  );
+
+  return pipe(
+    sequenceT(either.Applicative)(dataSet, answerSet),
     taskEither.fromEither,
-    taskEither.chain((srestTestDataSet) => {
-      const srestTestDataArr = pipe(
-        srestTestDataSet,
-        record.toArray
-        // record.collect((_, v) => v)
-      );
+    taskEither.chain(([dataSet, answerSet]) => {
+      const tkeys = pipe(dataSet, record.keys, set.fromArray(eq.eqString));
 
-      const styleIDs = srestTestDataArr.map(([x]) => x);
-      const answers = srestTestDataArr.map(([_, x]) => x.answers);
-      const _srests = srestTestDataArr.map(([_, x]) => x.srest);
+      const akeys = pipe(answerSet, record.keys, set.fromArray(eq.eqString));
 
+      const setEq = set.getEq(eq.eqString);
+
+      if (!setEq.equals(tkeys, akeys)) {
+        console.error("test data keys");
+        tkeys.forEach(console.error);
+        console.error("answer data keys");
+        akeys.forEach(console.error);
+        return taskEither.left(new Error("keys doesn't match") as any);
+      }
+
+      const styleIDs = pipe(tkeys, set.toArray(ord.ordString));
+      const _srests = styleIDs.map((k) => dataSet[k].srest);
+      const answers = styleIDs.map((k) => answerSet[k].answers);
       return pipe(
         _srests,
         array.map(srestS3KeyToURLStr({ Bucket, s3 })),
         array.sequence(taskEitherSeq),
+        taskEither.mapLeft((x) => x as any),
         taskEither.chain((srests) => {
           const aaa = srests.map((srest, idx) => ({
             data: srest,

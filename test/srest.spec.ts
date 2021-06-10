@@ -26,12 +26,14 @@ beforeAll(() => {
   }
 });
 
+const dataJsonPath = resolve(__dirname, "srest-test-data-set.json");
+const answerJsonPath = resolve(__dirname, "srest-answer.json");
 test(
   "srest-success",
   async () => {
-    const jsonPath = resolve(__dirname, "srest-test-data-set.json");
     const aa = srest.test(
-      jsonPath,
+      dataJsonPath,
+      answerJsonPath,
       "viewer-test-model",
       new S3Client({
         region: "ap-northeast-2",
@@ -58,9 +60,9 @@ test(
 test(
   "srest-type-error",
   async () => {
-    const jsonpath = resolve(__dirname, "srest-test-data-set.json");
     const aa = srest.test(
-      jsonpath,
+      dataJsonPath,
+      answerJsonPath,
       "viewer-test-model",
       new S3Client({
         region: "ap-northeast-2",
@@ -87,9 +89,9 @@ test(
 test(
   "srest-fail",
   async () => {
-    const jsonPath = resolve(__dirname, "srest-test-data-set.json");
     const aa = srest.test(
-      jsonPath,
+      dataJsonPath,
+      answerJsonPath,
       "viewer-test-model",
       new S3Client({
         region: "ap-northeast-2",
@@ -120,8 +122,8 @@ test(
   () => {
     return srest
       .regenerateAnswerData(
-        resolve(__dirname, "srest-test-data-set.json"),
-        resolve(__dirname, "srest-regen.json"),
+        dataJsonPath,
+        answerJsonPath,
         makeS3Client(),
         _BUCKET,
         "regen",

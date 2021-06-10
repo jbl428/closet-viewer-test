@@ -2,7 +2,6 @@ import * as D from "io-ts/Decoder";
 import { pipe } from "fp-ts/function";
 import { S3Key_D } from "./types";
 import { readonlyArray, record } from "fp-ts";
-import { AnswerPart } from "./AnswerData";
 import { HKT, Kind2, URIS2 } from "fp-ts/HKT";
 import { Applicative, Applicative2 } from "fp-ts/Applicative";
 
@@ -44,11 +43,9 @@ const SRestPart = D.struct({
   srest: SRest_D_S3Key,
 });
 export type SRestPart = D.TypeOf<typeof SRestPart>;
-const SRestTestData = pipe(AnswerPart, D.intersect(SRestPart));
-export type SRestTestData = D.TypeOf<typeof SRestTestData>;
-const SRestTestDataSet = D.record(SRestTestData);
-export type SRestTestDataSet = D.TypeOf<typeof SRestTestDataSet>;
-export const decodeSRestTestDataSet = SRestTestDataSet.decode;
+const SRestTestDataSetInput = D.record(SRestPart);
+export type SRestTestDataSetInput = D.TypeOf<typeof SRestTestDataSetInput>;
+export const decodeSRestTestDataSetInput = SRestTestDataSetInput.decode;
 const SRestResponse = D.type({
   isSeparated: D.boolean,
   result: SRest_D_Str,
