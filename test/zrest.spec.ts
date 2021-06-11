@@ -17,6 +17,7 @@ test(
     );
     const aa = zrest.test(
       resolve(__dirname, "zrest-test-data-set.json"),
+      resolve(__dirname, "zrest-answer.json"),
       "viewer-test-model",
       new S3Client({
         region: "ap-northeast-2",
@@ -49,6 +50,7 @@ test(
     );
     const aa = zrest.test(
       resolve(__dirname, "zrest-test-data-set.json"),
+      resolve(__dirname, "zrest-answer.json"),
       "viewer-test-model",
       new S3Client({
         region: "ap-northeast-2",
@@ -77,7 +79,7 @@ test(
     return zrest
       .regenerateAnswerData(
         resolve(__dirname, "zrest-test-data-set.json"),
-        resolve(__dirname, "zrest-regen.json"),
+        resolve(__dirname, "zrest-answer.json"),
         makeS3Client(),
         _BUCKET,
         "regen",
