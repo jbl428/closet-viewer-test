@@ -30,13 +30,16 @@ import { ReaderObservableEither } from "fp-ts-rxjs/lib/ReaderObservableEither";
 import {
   array,
   either,
+  eq,
   reader,
   readonlyArray,
   record,
+  semigroup,
+  set,
   taskEither,
 } from "fp-ts";
 import { none } from "fp-ts/Option";
-import { tup, tup3 } from "./types/types";
+import { S3Key, tup, tup3 } from "./types/types";
 import { S3Client } from "@aws-sdk/client-s3";
 import { sequenceT } from "fp-ts/Apply";
 import { downloadBufferFromS3 } from "./util";
@@ -44,10 +47,14 @@ import { applyFacets, facetFromArray, Facets } from "./Facets";
 import { monoidSum } from "fp-ts/Monoid";
 import {
   AnswerDataS3Key,
+  AnswerDataSet,
   AnswerDataT,
+  decodeAnswerDataSet,
   mapAnswerData,
+  mapAnswerDataGenericS3KeyToAnswerDataS3Key,
   sequenceAnswerData,
 } from "./types/AnswerData";
+import { writeOutputsToS3 } from "./write";
 
 const base64ToBuffer = (encoding: string) => Buffer.from(encoding, "base64");
 const cutDataURLHead = (dataURL: string) => {
@@ -209,7 +216,7 @@ function isDifferent([a, b]: [Buffer, Buffer]): boolean {
   return a.compare(b) !== 0;
 }
 
-export function testDataSet(
+function testDataSet(
   dataSet: { styleID: string; answer: AnswerDataS3Key }[],
   Bucket: string,
   s3: S3Client,
@@ -338,5 +345,84 @@ function makeAnswerStream2(
     ),
     map(sequenceAnswerData(taskEither.ApplicativeSeq)),
     concatMap(fromTaskEither)
+  );
+}
+export function generateAnswerData(
+  s3: S3Client,
+  bucket: string,
+  baseS3Key: string,
+  outJsonPath: string
+) {
+  //
+  return (idJSXtuples: Array<[string, JSX.Element]>) => {
+    return pipe(
+      writeOutputsToS3(s3, bucket, baseS3Key, idJSXtuples),
+      taskEither.map((writeResults: [string, AnswerDataT<S3Key>][]) => {
+        const answerDataSet: AnswerDataSet = pipe(
+          writeResults,
+          record.fromFoldable(
+            semigroup.getLastSemigroup<AnswerDataT<S3Key>>(),
+            array.Foldable
+          ),
+          record.map((x) => ({
+            answers: mapAnswerDataGenericS3KeyToAnswerDataS3Key(x),
+          }))
+        );
+
+        fs.writeFileSync(
+          outJsonPath,
+          JSON.stringify(answerDataSet, undefined, 2)
+        );
+      })
+    );
+  };
+}
+
+export function testCommon(
+  answerJsonPath: string,
+  jsx: JSX.Element,
+  styleIDOrder: Array<string>
+) {
+  return pipe(
+    JSON.parse(fs.readFileSync(answerJsonPath, "utf-8")),
+    decodeAnswerDataSet,
+    either.chain((answerDataSet) => {
+      const sidSet = set.fromArray(eq.eqString)(styleIDOrder);
+      const answerKeySet = set.fromArray(eq.eqString)(
+        record.keys(answerDataSet)
+      );
+      if (!set.subset(eq.eqString)(sidSet)(answerKeySet)) {
+        console.error("sid set");
+        sidSet.forEach(console.error);
+        console.error("answer key set");
+        answerKeySet.forEach(console.error);
+        return either.left(
+          new Error("sid set is not subset of answer key set") as any
+        );
+      }
+
+      const answerPairs = styleIDOrder.map((sid) =>
+        tup(sid, answerDataSet[sid])
+      );
+      return either.right(answerPairs);
+    }),
+    either.map((answerPairs) => {
+      const dataSet = answerPairs.map(([styleID, answer]) => ({
+        styleID,
+        answer: answer.answers,
+      }));
+      return ({
+        bucket,
+        s3,
+        debugImagePath,
+      }: {
+        bucket: string;
+        s3: S3Client;
+        debugImagePath: string;
+      }) => testDataSet(dataSet, bucket, s3, debugImagePath, jsx);
+    }),
+    either.sequence(reader.Applicative),
+    reader.map(taskEither.fromEither),
+    reader.map(taskEither.flatten)
   );
 }
