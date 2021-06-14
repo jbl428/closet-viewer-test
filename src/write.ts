@@ -45,19 +45,19 @@ function writeAnswer(s3: S3Client, bucket: string, baseKey: string) {
   return (answersForFacets: AnswerDataT<Buffer>) =>
     pipe(
       answersForFacets,
-      array.mapWithIndex((idx, facets) => {
+      array.mapWithIndex((sequenceIdx, facets) => {
         return pipe(
           facets,
           record.mapWithIndex((facetName, buffers) => {
             return pipe(
               buffers,
-              readonlyArray.mapWithIndex((idx, buffer) => {
+              readonlyArray.mapWithIndex((alterAnswerIdx, buffer) => {
                 const key = join(
                   baseKey,
                   `answers`,
-                  idx.toString(),
+                  sequenceIdx.toString(),
                   facetName,
-                  `${idx}.png`
+                  `${alterAnswerIdx}.png`
                 );
                 return pipe(
                   uploads3(s3, key, bucket)({ _tag: "buffer", buffer }),

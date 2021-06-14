@@ -2,7 +2,6 @@ import { URL } from "url";
 import { S3Client } from "@aws-sdk/client-s3";
 
 export const testDataProvision = {
-  bad: new URL("https://viewer-library.s3.ap-northeast-2.amazonaws.com/d.js"),
   liburl: new URL(
     "https://viewer-library.s3.ap-northeast-2.amazonaws.com/tq-captures/rv.js"
   ),

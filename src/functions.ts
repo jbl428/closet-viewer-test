@@ -216,7 +216,7 @@ function isDifferent([a, b]: [Buffer, Buffer]): boolean {
   return a.compare(b) !== 0;
 }
 
-function testDataSet(
+export function testDataSet(
   dataSet: { styleID: string; answer: AnswerDataS3Key }[],
   Bucket: string,
   s3: S3Client,

@@ -68,73 +68,7 @@
       ]
     }
   },
-  "00000003": {
-    "key": "2021-03-23T05%3A29%3A48.677Z/00000003/viewer.zrest",
-    "answers": {
-      "back": [
-        "2021-03-23T05%3A29%3A48.677Z/00000003/answers/back/0.png"
-      ],
-      "bottom": [
-        "2021-03-23T05%3A29%3A48.677Z/00000003/answers/bottom/0.png"
-      ],
-      "front": [
-        "2021-03-23T05%3A29%3A48.677Z/00000003/answers/front/0.png"
-      ],
-      "left": [
-        "2021-03-23T05%3A29%3A48.677Z/00000003/answers/left/0.png"
-      ],
-      "right": [
-        "2021-03-23T05%3A29%3A48.677Z/00000003/answers/right/0.png"
-      ],
-      "top": [
-        "2021-03-23T05%3A29%3A48.677Z/00000003/answers/top/0.png"
-      ]
-    }
-  },
-  "00000004": {
-    "key": "2021-03-23T05%3A29%3A48.677Z/00000004/viewer.zrest",
-    "answers": {
-      "back": [
-        "2021-03-23T05%3A29%3A48.677Z/00000004/answers/back/0.png"
-      ],
-      "bottom": [
-        "2021-03-23T05%3A29%3A48.677Z/00000004/answers/bottom/0.png"
-      ],
-      "front": [
-        "2021-03-23T05%3A29%3A48.677Z/00000004/answers/front/0.png"
-      ],
-      "left": [
-        "2021-03-23T05%3A29%3A48.677Z/00000004/answers/left/0.png"
-      ],
-      "right": [
-        "2021-03-23T05%3A29%3A48.677Z/00000004/answers/right/0.png"
-      ],
-      "top": [
-        "2021-03-23T05%3A29%3A48.677Z/00000004/answers/top/0.png"
-      ]
-    }
-  },
-  "00000005": {
-    "key": "2021-03-23T05%3A29%3A48.677Z/00000005/viewer.zrest",
-    "answers": {
-      "back": [
-        "2021-03-23T05%3A29%3A48.677Z/00000005/answers/back/0.png"
-      ],
-      "bottom": [
-        "2021-03-23T05%3A29%3A48.677Z/00000005/answers/bottom/0.png"
-      ],
-      "front": [
-        "2021-03-23T05%3A29%3A48.677Z/00000005/answers/front/0.png"
-      ],
-      "left": [
-        "2021-03-23T05%3A29%3A48.677Z/00000005/answers/left/0.png"
-      ],
-      "right": [
-        "2021-03-23T05%3A29%3A48.677Z/00000005/answers/right/0.png"
-      ],
-      "top": [
-        "2021-03-23T05%3A29%3A48.677Z/00000005/answers/top/0.png"
-      ]
-    }
+  "00000031": {
+    "key": "2021-03-23T05%3A29%3A48.677Z/00000031/viewer.zrest"
   }
 }

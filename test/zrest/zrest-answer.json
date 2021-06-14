@@ -1,0 +1,138 @@
+{
+  "00000000": {
+    "answers": [
+      {
+        "back": [
+          "regen/00000000/answers/answers/0/back/0.png"
+        ],
+        "bottom": [
+          "regen/00000000/answers/answers/0/bottom/0.png"
+        ],
+        "front": [
+          "regen/00000000/answers/answers/0/front/0.png"
+        ],
+        "left": [
+          "regen/00000000/answers/answers/0/left/0.png"
+        ],
+        "right": [
+          "regen/00000000/answers/answers/0/right/0.png"
+        ],
+        "top": [
+          "regen/00000000/answers/answers/0/top/0.png"
+        ]
+      }
+    ]
+  },
+  "00000001": {
+    "answers": [
+      {
+        "back": [
+          "regen/00000001/answers/answers/0/back/0.png"
+        ],
+        "bottom": [
+          "regen/00000001/answers/answers/0/bottom/0.png"
+        ],
+        "front": [
+          "regen/00000001/answers/answers/0/front/0.png"
+        ],
+        "left": [
+          "regen/00000001/answers/answers/0/left/0.png"
+        ],
+        "right": [
+          "regen/00000001/answers/answers/0/right/0.png"
+        ],
+        "top": [
+          "regen/00000001/answers/answers/0/top/0.png"
+        ]
+      }
+    ]
+  },
+  "00000002": {
+    "answers": [
+      {
+        "back": [
+          "regen/00000002/answers/answers/0/back/0.png"
+        ],
+        "bottom": [
+          "regen/00000002/answers/answers/0/bottom/0.png"
+        ],
+        "front": [
+          "regen/00000002/answers/answers/0/front/0.png"
+        ],
+        "left": [
+          "regen/00000002/answers/answers/0/left/0.png"
+        ],
+        "right": [
+          "regen/00000002/answers/answers/0/right/0.png"
+        ],
+        "top": [
+          "regen/00000002/answers/answers/0/top/0.png"
+        ]
+      }
+    ]
+  },
+  "00000031": {
+    "answers": [
+      {
+        "back": [
+          "regen/00000031/answers/answers/0/back/0.png"
+        ],
+        "bottom": [
+          "regen/00000031/answers/answers/0/bottom/0.png"
+        ],
+        "front": [
+          "regen/00000031/answers/answers/0/front/0.png"
+        ],
+        "left": [
+          "regen/00000031/answers/answers/0/left/0.png"
+        ],
+        "right": [
+          "regen/00000031/answers/answers/0/right/0.png"
+        ],
+        "top": [
+          "regen/00000031/answers/answers/0/top/0.png"
+        ]
+      },
+      {
+        "back": [
+          "regen/00000031/answers/answers/1/back/0.png"
+        ],
+        "bottom": [
+          "regen/00000031/answers/answers/1/bottom/0.png"
+        ],
+        "front": [
+          "regen/00000031/answers/answers/1/front/0.png"
+        ],
+        "left": [
+          "regen/00000031/answers/answers/1/left/0.png"
+        ],
+        "right": [
+          "regen/00000031/answers/answers/1/right/0.png"
+        ],
+        "top": [
+          "regen/00000031/answers/answers/1/top/0.png"
+        ]
+      },
+      {
+        "back": [
+          "regen/00000031/answers/answers/2/back/0.png"
+        ],
+        "bottom": [
+          "regen/00000031/answers/answers/2/bottom/0.png"
+        ],
+        "front": [
+          "regen/00000031/answers/answers/2/front/0.png"
+        ],
+        "left": [
+          "regen/00000031/answers/answers/2/left/0.png"
+        ],
+        "right": [
+          "regen/00000031/answers/answers/2/right/0.png"
+        ],
+        "top": [
+          "regen/00000031/answers/answers/2/top/0.png"
+        ]
+      }
+    ]
+  }
+}
