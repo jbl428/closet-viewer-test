@@ -47,30 +47,6 @@
       }
     ]
   },
-  "5bf6c90e9b1b4829969ac1d9c31b27bc": {
-    "answers": [
-      {
-        "back": [
-          "regen/5bf6c90e9b1b4829969ac1d9c31b27bc/answers/answers/0/back/0.png"
-        ],
-        "bottom": [
-          "regen/5bf6c90e9b1b4829969ac1d9c31b27bc/answers/answers/0/bottom/0.png"
-        ],
-        "front": [
-          "regen/5bf6c90e9b1b4829969ac1d9c31b27bc/answers/answers/0/front/0.png"
-        ],
-        "left": [
-          "regen/5bf6c90e9b1b4829969ac1d9c31b27bc/answers/answers/0/left/0.png"
-        ],
-        "right": [
-          "regen/5bf6c90e9b1b4829969ac1d9c31b27bc/answers/answers/0/right/0.png"
-        ],
-        "top": [
-          "regen/5bf6c90e9b1b4829969ac1d9c31b27bc/answers/answers/0/top/0.png"
-        ]
-      }
-    ]
-  },
   "8ce76da69d4a4a5ea4ae8726e14e48a0": {
     "answers": [
       {
@@ -91,30 +67,6 @@
         ],
         "top": [
           "regen/8ce76da69d4a4a5ea4ae8726e14e48a0/answers/answers/0/top/0.png"
-        ]
-      }
-    ]
-  },
-  "9ad0188d578543f4ad1172cb69665e21": {
-    "answers": [
-      {
-        "back": [
-          "regen/9ad0188d578543f4ad1172cb69665e21/answers/answers/0/back/0.png"
-        ],
-        "bottom": [
-          "regen/9ad0188d578543f4ad1172cb69665e21/answers/answers/0/bottom/0.png"
-        ],
-        "front": [
-          "regen/9ad0188d578543f4ad1172cb69665e21/answers/answers/0/front/0.png"
-        ],
-        "left": [
-          "regen/9ad0188d578543f4ad1172cb69665e21/answers/answers/0/left/0.png"
-        ],
-        "right": [
-          "regen/9ad0188d578543f4ad1172cb69665e21/answers/answers/0/right/0.png"
-        ],
-        "top": [
-          "regen/9ad0188d578543f4ad1172cb69665e21/answers/answers/0/top/0.png"
         ]
       }
     ]
