@@ -11,13 +11,12 @@ function makeRecursiveTemplateJSCode(
   } else {
     return `
         console.log("SREST TEST START", "${srestObjs[0].rest}")
-        closet.viewer.loadSrestWithInitialTextureQuality(${JSON.stringify(
+        closet.viewer.loadSrestWithTextureQualities(${JSON.stringify(
           srestObjs[0]
         )})
-          .then(()=>closet.viewer.capturePrincipleViews())
-          .then((images)=>fetch("${hookDomain}", {
+          .then((captures)=>fetch("${hookDomain}", {
               method: "POST",
-              body: JSON.stringify({ images, }),
+              body: JSON.stringify({ captures, }),
             }))
           .then(()=>{
             ${makeRecursiveTemplateJSCode(srestObjs.slice(1))}
