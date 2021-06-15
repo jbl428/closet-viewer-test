@@ -1,7 +1,7 @@
 import { srestS3KeyToURLStr } from "./util";
 import { pipe } from "fp-ts/function";
 import { either, reader, taskEither } from "fp-ts";
-import { decodeSRestTestDataSet } from "./types/Srest";
+import { decodeSRestTestDataSetInput } from "./types/Srest";
 
 /**
  * Create testable SRest that is available for 30 minutes.
@@ -16,7 +16,7 @@ export function makeTestableSRestFromDataSetJSON(
     srestS3KeyToURLStr,
     reader.map((srestReader) => {
       return pipe(
-        decodeSRestTestDataSet(JSON.parse(jsonStr)),
+        decodeSRestTestDataSetInput(JSON.parse(jsonStr)),
         either.map((srestTestData) => srestTestData[styleID].srest),
         either.map(srestReader),
         either.sequence(taskEither.taskEither),

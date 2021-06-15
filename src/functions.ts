@@ -12,7 +12,7 @@ import * as D from "io-ts/Decoder";
 import { concatMap, map, reduce, share } from "rxjs/operators";
 import { pipe } from "fp-ts/function";
 import { from, Observable, zip } from "rxjs";
-import { bracket, taskEitherSeq, tryCatchK } from "fp-ts/TaskEither";
+import { bracket, tryCatchK } from "fp-ts/TaskEither";
 import * as RTE from "fp-ts/ReaderTaskEither";
 import { ReaderTaskEither } from "fp-ts/ReaderTaskEither";
 
@@ -28,22 +28,33 @@ import {
 } from "fp-ts-rxjs/lib/ObservableEither";
 import { ReaderObservableEither } from "fp-ts-rxjs/lib/ReaderObservableEither";
 import {
+  array,
   either,
+  eq,
   reader,
   readonlyArray,
-  readonlyNonEmptyArray,
   record,
+  semigroup,
+  set,
   taskEither,
 } from "fp-ts";
 import { none } from "fp-ts/Option";
-import { semigroupAll } from "fp-ts/Semigroup";
-import { tup } from "./types/types";
+import { S3Key, tup, tup3 } from "./types/types";
 import { S3Client } from "@aws-sdk/client-s3";
 import { sequenceT } from "fp-ts/Apply";
 import { downloadBufferFromS3 } from "./util";
 import { applyFacets, facetFromArray, Facets } from "./Facets";
 import { monoidSum } from "fp-ts/Monoid";
-import { AnswerDataS3Key, mapAnswerData } from "./types/AnswerData";
+import {
+  AnswerDataS3Key,
+  AnswerDataSet,
+  AnswerDataT,
+  decodeAnswerDataSet,
+  mapAnswerData,
+  mapAnswerDataGenericS3KeyToAnswerDataS3Key,
+  sequenceAnswerData,
+} from "./types/AnswerData";
+import { writeOutputsToS3 } from "./write";
 
 const base64ToBuffer = (encoding: string) => Buffer.from(encoding, "base64");
 const cutDataURLHead = (dataURL: string) => {
@@ -52,7 +63,7 @@ const cutDataURLHead = (dataURL: string) => {
 };
 
 const principleViewResponse = D.type({
-  images: D.array(D.string),
+  captures: D.array(D.array(D.string)),
 });
 
 export function stopWhenError<_E, _A>(
@@ -81,7 +92,7 @@ export function stopWhenError<_E, _A>(
 export function streamScreenshots_browser(
   jsx: JSX.Element,
   hookDomain: string
-): ReaderObservableEither<Browser, unknown, Facets<Buffer>> {
+): ReaderObservableEither<Browser, unknown, Array<Facets<Buffer>>> {
   const pageurl = createTmpHTMLURL_JSX(jsx);
   return pipe(
     createNewPage(),
@@ -109,11 +120,16 @@ export function streamScreenshots_browser(
                 D.string.decode,
                 E.map(JSON.parse),
                 E.chain(principleViewResponse.decode),
-                E.map((x) =>
-                  facetFromArray(
-                    x.images.map(cutDataURLHead).map(base64ToBuffer)
-                  )
-                ),
+                E.map((x) => {
+                  return pipe(
+                    x.captures,
+                    array.map((capture) =>
+                      facetFromArray(
+                        capture.map(cutDataURLHead).map(base64ToBuffer)
+                      )
+                    )
+                  );
+                }),
                 E.mapLeft((x) => x as unknown)
                 // E.sequence(A.array)
               );
@@ -225,17 +241,20 @@ export function testDataSet(
     const compareResults = zip(screenshots, answerStream).pipe(
       map(([x, y]) => sequenceT(E.either)(x, y)),
       observableEither.map(([result, answer]) => {
-        return sequenceT(applyFacets)(result, answer);
+        return array.zipWith(result, answer, sequenceT(applyFacets));
       }),
       observableEither.map(
-        record.map(([input, answerSet]) => {
-          return pipe(
-            answerSet,
-            readonlyNonEmptyArray.map((answer) => isDifferent([input, answer])),
-            readonlyNonEmptyArray.fold(semigroupAll)
-          );
-        })
-      )
+        array.map(
+          record.map(([input, answerSet]) => {
+            return pipe(
+              answerSet,
+              readonlyArray.map((answer) => isDifferent([input, answer])),
+              readonlyArray.reduceRight(true, (x, y) => x && y)
+            );
+          })
+        )
+      ),
+      observableEither.mapLeft((x) => x as any)
     );
 
     const result = zip(
@@ -247,28 +266,62 @@ export function testDataSet(
       map(([styleID, compareResult, screenshot, answers]) => {
         return pipe(
           sequenceT(either.either)(compareResult, screenshot, answers),
-          either.map(([x, y, z]) => sequenceT(applyFacets)(x, y, z)),
-          either.map(
-            record.mapWithIndex(
-              (
-                facetKey,
-                [isDifferent, screenshot, answers]
-              ): Either<unknown, number> => {
-                if (isDifferent) {
-                  return saveDebugImages(
-                    screenshot,
-                    readonlyNonEmptyArray.head(answers),
-                    styleID + "-" + facetKey,
-                    debugImageDir
-                  );
-                } else {
-                  return either.right(0);
-                }
+          either.chain(
+            ([resultFacetsSet, screenshotFacetsSet, answerFacetsSet]) => {
+              const facetsTuple3s = pipe(
+                array.zip(
+                  resultFacetsSet,
+                  array.zip(screenshotFacetsSet, answerFacetsSet)
+                ),
+                array.map(([x, [y, z]]) => tup3(x, y, z))
+              );
+              if (
+                resultFacetsSet.length !== screenshotFacetsSet.length &&
+                screenshotFacetsSet.length !== answerFacetsSet.length
+              ) {
+                return either.left(
+                  new Error(
+                    `${styleID}'s result, screenshot, answer's length are not all the same: ${resultFacetsSet.length} ${screenshotFacetsSet.length} ${answerFacetsSet.length}`
+                  )
+                );
               }
-            )
+              return either.right(facetsTuple3s);
+            }
           ),
-          either.chain(record.sequence(either.either)),
-          either.map(record.foldMap(monoidSum)((x) => x))
+          either.map(array.map(([x, y, z]) => sequenceT(applyFacets)(x, y, z))),
+          either.map(
+            array.mapWithIndex((idx, x) => {
+              return pipe(
+                x,
+                record.mapWithIndex(
+                  (
+                    facetKey,
+                    [isDifferent, screenshot, answers]
+                  ): Either<unknown, number> => {
+                    if (isDifferent) {
+                      const saving = saveDebugImages(
+                        screenshot,
+                        answers[0],
+                        styleID + "-" + idx.toString() + "-" + facetKey,
+                        debugImageDir
+                      );
+                      return pipe(
+                        saving,
+                        either.map(() => 1)
+                      );
+                    } else {
+                      return either.right(0);
+                    }
+                  }
+                )
+              );
+            })
+          ),
+          either.map(array.map(record.sequence(either.either))),
+          either.chain(either.sequenceArray),
+          // either.map(xx=>xx),
+          either.map(readonlyArray.map(record.foldMap(monoidSum)((x) => x))),
+          either.map(readonlyArray.foldMap(monoidSum)((x) => x))
         );
       }),
       reduce(either.getSemigroup(monoidSum).concat)
@@ -282,7 +335,7 @@ function makeAnswerStream2(
   testDataArr: readonly [string, AnswerDataS3Key][],
   Bucket: string,
   s3: S3Client
-) {
+): Observable<E.Either<unknown, AnswerDataT<Buffer>>> {
   return from(testDataArr).pipe(
     map((x) => x[1]),
     map(
@@ -290,19 +343,86 @@ function makeAnswerStream2(
         downloadBufferFromS3({ Bucket, Key: s3key.str }, s3)
       )
     ),
-    map(record.map(readonlyArray.sequence(taskEitherSeq))),
-    map(
-      record.map(
-        taskEither.chainEitherK((buffers) => {
-          return pipe(
-            buffers,
-            readonlyNonEmptyArray.fromReadonlyArray,
-            either.fromOption(() => new Error("answers not exist") as unknown)
-          );
-        })
-      )
-    ),
-    map(record.sequence(taskEither.taskEither)),
-    concatMap((x) => x())
+    map(sequenceAnswerData(taskEither.ApplicativeSeq)),
+    concatMap(fromTaskEither)
+  );
+}
+export function generateAnswerData(
+  s3: S3Client,
+  bucket: string,
+  baseS3Key: string,
+  outJsonPath: string
+) {
+  //
+  return (idJSXtuples: Array<[string, JSX.Element]>) => {
+    return pipe(
+      writeOutputsToS3(s3, bucket, baseS3Key, idJSXtuples),
+      taskEither.map((writeResults: [string, AnswerDataT<S3Key>][]) => {
+        const answerDataSet: AnswerDataSet = pipe(
+          writeResults,
+          record.fromFoldable(
+            semigroup.getLastSemigroup<AnswerDataT<S3Key>>(),
+            array.Foldable
+          ),
+          record.map((x) => ({
+            answers: mapAnswerDataGenericS3KeyToAnswerDataS3Key(x),
+          }))
+        );
+
+        fs.writeFileSync(
+          outJsonPath,
+          JSON.stringify(answerDataSet, undefined, 2)
+        );
+      })
+    );
+  };
+}
+
+export function testCommon(
+  answerJsonPath: string,
+  jsx: JSX.Element,
+  styleIDOrder: Array<string>
+) {
+  return pipe(
+    JSON.parse(fs.readFileSync(answerJsonPath, "utf-8")),
+    decodeAnswerDataSet,
+    either.chain((answerDataSet) => {
+      const sidSet = set.fromArray(eq.eqString)(styleIDOrder);
+      const answerKeySet = set.fromArray(eq.eqString)(
+        record.keys(answerDataSet)
+      );
+      if (!set.subset(eq.eqString)(sidSet)(answerKeySet)) {
+        console.error("sid set");
+        sidSet.forEach(console.error);
+        console.error("answer key set");
+        answerKeySet.forEach(console.error);
+        return either.left(
+          new Error("sid set is not subset of answer key set") as any
+        );
+      }
+
+      const answerPairs = styleIDOrder.map((sid) =>
+        tup(sid, answerDataSet[sid])
+      );
+      return either.right(answerPairs);
+    }),
+    either.map((answerPairs) => {
+      const dataSet = answerPairs.map(([styleID, answer]) => ({
+        styleID,
+        answer: answer.answers,
+      }));
+      return ({
+        bucket,
+        s3,
+        debugImagePath,
+      }: {
+        bucket: string;
+        s3: S3Client;
+        debugImagePath: string;
+      }) => testDataSet(dataSet, bucket, s3, debugImagePath, jsx);
+    }),
+    either.sequence(reader.Applicative),
+    reader.map(taskEither.fromEither),
+    reader.map(taskEither.flatten)
   );
 }

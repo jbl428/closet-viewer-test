@@ -35,12 +35,12 @@ function makeRecursiveZrestTemplateJSCode(
   } else {
     return `
         console.log("ZREST TEST START", "${zrestURLs[0]}")
-        closet.viewer.loadZrestWithoutRendering("${zrestURLs[0]}")
-          .then(()=>new Promise(done => setTimeout(done, 1000)))
-          .then(()=>closet.viewer.capturePrincipleViews())
-          .then((images)=>fetch("${hookDomain}", {
+        closet.viewer.loadZrestWithoutRenderingForEachColorway("${
+          zrestURLs[0]
+        }")
+          .then((captures)=>fetch("${hookDomain}", {
               method: "POST",
-              body: JSON.stringify({ images, }),
+              body: JSON.stringify({ captures, }),
             }))
           .then(()=>{
             ${makeRecursiveZrestTemplateJSCode(zrestURLs.slice(1))}
@@ -56,11 +56,12 @@ function makeRecursiveTemplateJSCode(
   } else {
     return `
         console.log("SREST TEST START", "${srestObjs[0].rest}")
-        closet.viewer.loadSrestWithoutRendering(${JSON.stringify(srestObjs[0])})
-          .then(()=>closet.viewer.capturePrincipleViews())
-          .then((images)=>fetch("${hookDomain}", {
+        closet.viewer.loadSrestWithoutRenderingForEachColorway(${JSON.stringify(
+          srestObjs[0]
+        )})
+          .then((captures)=>fetch("${hookDomain}", {
               method: "POST",
-              body: JSON.stringify({ images, }),
+              body: JSON.stringify({ captures, }),
             }))
           .then(()=>{
             ${makeRecursiveTemplateJSCode(srestObjs.slice(1))}

@@ -38,7 +38,7 @@ test(
           bucket: "viewer-test-model",
           email: getEmail(),
           libURL: new URL(
-            "https://viewer-library.s3.ap-northeast-2.amazonaws.com/tq/rv.js"
+            "https://viewer-library.s3.ap-northeast-2.amazonaws.com/tq-captures/rv.js"
           ),
           password: getPassworrd(),
           s3: makeS3(),
@@ -54,7 +54,7 @@ test(
         expect(isRight(e)).toBeTruthy();
       });
   },
-  1000 * 60
+  1000 * 60 * 3
 );
 
 test(
@@ -67,7 +67,7 @@ test(
           password: getPassworrd(),
           s3: makeS3(),
           libURL: new URL(
-            "https://viewer-library.s3.ap-northeast-2.amazonaws.com/tq/rv.js"
+            "https://viewer-library.s3.ap-northeast-2.amazonaws.com/tq-captures/rv.js"
           ),
         },
         resolve(__dirname, "tq.json"),

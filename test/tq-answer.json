@@ -2,24 +2,46 @@
   "bucket": "viewer-test-model",
   "baseS3Key": "tq",
   "styleID": "75db4f18f65c440584a80c407ff6194c",
-  "answer": {
-    "back": [
-      "tq/75db4f18f65c440584a80c407ff6194c/answers/answers/back/0.png"
-    ],
-    "bottom": [
-      "tq/75db4f18f65c440584a80c407ff6194c/answers/answers/bottom/0.png"
-    ],
-    "front": [
-      "tq/75db4f18f65c440584a80c407ff6194c/answers/answers/front/0.png"
-    ],
-    "left": [
-      "tq/75db4f18f65c440584a80c407ff6194c/answers/answers/left/0.png"
-    ],
-    "right": [
-      "tq/75db4f18f65c440584a80c407ff6194c/answers/answers/right/0.png"
-    ],
-    "top": [
-      "tq/75db4f18f65c440584a80c407ff6194c/answers/answers/top/0.png"
-    ]
-  }
+  "answer": [
+    {
+      "back": [
+        "tq/75db4f18f65c440584a80c407ff6194c/answers/answers/0/back/0.png"
+      ],
+      "bottom": [
+        "tq/75db4f18f65c440584a80c407ff6194c/answers/answers/0/bottom/0.png"
+      ],
+      "front": [
+        "tq/75db4f18f65c440584a80c407ff6194c/answers/answers/0/front/0.png"
+      ],
+      "left": [
+        "tq/75db4f18f65c440584a80c407ff6194c/answers/answers/0/left/0.png"
+      ],
+      "right": [
+        "tq/75db4f18f65c440584a80c407ff6194c/answers/answers/0/right/0.png"
+      ],
+      "top": [
+        "tq/75db4f18f65c440584a80c407ff6194c/answers/answers/0/top/0.png"
+      ]
+    },
+    {
+      "back": [
+        "tq/75db4f18f65c440584a80c407ff6194c/answers/answers/1/back/0.png"
+      ],
+      "bottom": [
+        "tq/75db4f18f65c440584a80c407ff6194c/answers/answers/1/bottom/0.png"
+      ],
+      "front": [
+        "tq/75db4f18f65c440584a80c407ff6194c/answers/answers/1/front/0.png"
+      ],
+      "left": [
+        "tq/75db4f18f65c440584a80c407ff6194c/answers/answers/1/left/0.png"
+      ],
+      "right": [
+        "tq/75db4f18f65c440584a80c407ff6194c/answers/answers/1/right/0.png"
+      ],
+      "top": [
+        "tq/75db4f18f65c440584a80c407ff6194c/answers/answers/1/top/0.png"
+      ]
+    }
+  ]
 }

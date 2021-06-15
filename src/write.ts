@@ -13,12 +13,12 @@ import { concatMap, first, map, toArray } from "rxjs/operators";
 import { toTaskEither } from "fp-ts-rxjs/lib/ObservableEither";
 import { addSlash, S3Key, tup } from "./types/types";
 import { downloadBuffer, uploads3 } from "./util";
-import { Facets } from "./Facets";
 import { hookDomain } from "./template";
 import { runWithBrowser, streamScreenshots_browser } from "./functions";
 import { decodeSRestResponse, mapSrest, SRest, SRestPart } from "./types/Srest";
 import { ZRestPart } from "./types/Zrest";
 import { Browser } from "puppeteer";
+import { AnswerDataT } from "./types/AnswerData";
 
 function fetchZrestURL_styleid(
   domain: string,
@@ -42,23 +42,35 @@ function fetchZrestURL_styleid(
  * @param baseKey
  */
 function writeAnswer(s3: S3Client, bucket: string, baseKey: string) {
-  return (answersForFacets: Facets<Buffer[]>) =>
+  return (answersForFacets: AnswerDataT<Buffer>) =>
     pipe(
       answersForFacets,
-      record.mapWithIndex((facetName, buffers) => {
+      array.mapWithIndex((sequenceIdx, facets) => {
         return pipe(
-          buffers,
-          array.mapWithIndex((idx, buffer) => {
-            const key = join(baseKey, `answers`, facetName, `${idx}.png`);
+          facets,
+          record.mapWithIndex((facetName, buffers) => {
             return pipe(
-              uploads3(s3, key, bucket)({ _tag: "buffer", buffer }),
-              taskEither.map(() => new S3Key(key))
+              buffers,
+              readonlyArray.mapWithIndex((alterAnswerIdx, buffer) => {
+                const key = join(
+                  baseKey,
+                  `answers`,
+                  sequenceIdx.toString(),
+                  facetName,
+                  `${alterAnswerIdx}.png`
+                );
+                return pipe(
+                  uploads3(s3, key, bucket)({ _tag: "buffer", buffer }),
+                  taskEither.map(() => new S3Key(key))
+                );
+              }),
+              taskEither.sequenceArray
             );
           }),
-          taskEither.sequenceArray
+          record.sequence(taskEither.taskEither)
         );
       }),
-      record.sequence(taskEither.taskEither)
+      array.sequence(taskEither.ApplicativeSeq)
     );
 }
 
@@ -219,7 +231,7 @@ export function writeOutputsToS3(
         const answerForEachFacet = toTaskEither(answerStream.pipe(first()));
         return pipe(
           answerForEachFacet,
-          taskEither.map(record.map((x) => [x])),
+          taskEither.map(array.map(record.map((x) => [x]))),
           taskEither.chain(
             writeAnswer(s3, bucket, join(baseS3Key, styleID, "answers"))
           ),

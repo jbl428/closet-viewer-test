@@ -15,6 +15,10 @@ export function tup<A, B>(a: A, b: B): [A, B] {
   return [a, b];
 }
 
+export function tup3<A, B, C>(a: A, b: B, c: C): [A, B, C] {
+  return [a, b, c];
+}
+
 export class S3Key {
   constructor(public str: string) {}
 

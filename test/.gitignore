@@ -14,3 +14,7 @@ alt-debug-images
 /srest-debug-success/
 srest-regen.json
 zrest-regen.json
+/zrest/zrest-debug-fail/
+/zrest/bad-answer.json
+/srest/srest-debug-success/
+/srest/bad-answer.json
